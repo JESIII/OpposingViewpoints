@@ -1,0 +1,24 @@
+{
+  "Name": "default",
+  "SessionToken": null,
+  "AccessToken": null,
+  "Signature": "FD809C428E48E5EA70B291D56BFCEB92",
+  "Conversations": [
+    {
+      "Id": "default",
+      "Created": "2023-03-29T16:41:33.7756264-07:00",
+      "Updated": "0001-01-01T00:00:00",
+      "ConversationId": null,
+      "ParentMessageId": "50105061-e05e-45e0-afff-601d5a4867c4"
+    },
+    {
+      "Id": "784fc149-269a-48e9-86b8-f30be5095afa",
+      "Created": "2023-03-29T16:50:16.1635447-07:00",
+      "Updated": "0001-01-01T00:00:00",
+      "ConversationId": "784fc149-269a-48e9-86b8-f30be5095afa",
+      "ParentMessageId": "fe5642aa-ec34-4c5d-abe2-8ce9a1ca3dfc"
+    }
+  ],
+  "AccessTokenExpiresAt": null,
+  "AccountType": 0
+}

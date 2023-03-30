@@ -1,0 +1,93 @@
+﻿@page
+@model OpposingViewpoints.Pages.ArticlesModel
+@{
+    ViewData["Title"] = "Articles";
+}
+
+<div class="row">
+    <div class="col" style="border:2px solid MediumSeaGreen;">
+        <h2>For</h2>
+        @foreach (var article in Model.Articles.Where(a => a.bias == Enums.BiasEnum.For))
+        {
+            <p>
+                <b>@article.title.text</b>
+                <br>
+
+                <i>@article.paperAbstractTruncated</i>
+                <br>
+                Authors:
+                <br>
+                <ul>
+                    @foreach (var author in article.authors.Select(x => x))
+                    {
+                        <li>
+                            @author.FirstOrDefault()?.name
+                        </li>
+                    }
+                </ul>
+                Journal: @article.journal.name
+                <br>
+                Citations: @article.citationStats.numCitations
+                <br>
+                <a href="@article.links.FirstOrDefault()?.url">Link</a>
+            </p>
+            <br>
+        }
+    </div>
+    <div class="col" style="border:2px solid grey">
+        <h2>Neutral</h2>
+        @foreach (var article in Model.Articles.Where(a => a.bias == Enums.BiasEnum.Neutral))
+        {
+            <p>
+                <b>@article.title.text</b>
+
+                <br>
+                <i>
+                    @article.paperAbstractTruncated
+                </i>
+                <br>
+                Authors:<br>
+                <ul>
+                    @foreach (var author in article.authors.Select(x => x))
+                    {
+                        <li>
+                            @author.FirstOrDefault()?.name
+                        </li>
+                    }
+                </ul>
+
+                Journal: @article.journal.name<br>
+                Citations: @article.citationStats.numCitations
+                <br>
+                <a href="@article.links.FirstOrDefault()?.url">Link</a>
+            </p>
+            <br>
+        }
+    </div>
+    <div class="col" style="border:2px solid Tomato;">
+        <h2>Against</h2>
+        @foreach (var article in Model.Articles.Where(a => a.bias == Enums.BiasEnum.Against))
+        {
+            <p>
+                <b>@article.title.text</b>
+                <br>
+                <i>@article.paperAbstractTruncated</i>
+                <br>
+                Authors:<br>
+                <ul>
+                    @foreach (var author in article.authors.Select(x => x))
+                    {
+                        <li>
+                            @author.FirstOrDefault()?.name
+                        </li>
+                    }
+                </ul>
+                Journal: @article.journal.name<br>
+                Citations: @article.citationStats.numCitations
+                <br>
+                <a href="@article.links.FirstOrDefault()?.url">Link</a>
+            </p>
+            <br>
+        }
+    </div>
+</div>
