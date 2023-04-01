@@ -10,26 +10,24 @@
         @foreach (var article in Model.Articles.Where(a => a.bias == Enums.BiasEnum.For))
         {
             <p>
-                <b>@article.title.text</b>
+                <b>@article.title</b>
                 <br>
 
-                <i>@article.paperAbstractTruncated</i>
+                <i>@article.abstr</i>
                 <br>
                 Authors:
                 <br>
                 <ul>
-                    @foreach (var author in article.authors.Select(x => x))
+                    @foreach (var author in article.authors)
                     {
                         <li>
-                            @author.FirstOrDefault()?.name
+                            @author.name
                         </li>
                     }
                 </ul>
-                Journal: @article.journal.name
+                Journal: @(article.journal?.name ?? "N/A")
                 <br>
-                Citations: @article.citationStats.numCitations
-                <br>
-                <a href="@article.links.FirstOrDefault()?.url">Link</a>
+                <a href="@article.url">Link</a>
             </p>
             <br>
         }
@@ -39,27 +37,24 @@
         @foreach (var article in Model.Articles.Where(a => a.bias == Enums.BiasEnum.Neutral))
         {
             <p>
-                <b>@article.title.text</b>
+                <b>@article.title</b>
+                <br>
 
+                <i>@article.abstr</i>
                 <br>
-                <i>
-                    @article.paperAbstractTruncated
-                </i>
+                Authors:
                 <br>
-                Authors:<br>
                 <ul>
-                    @foreach (var author in article.authors.Select(x => x))
+                    @foreach (var author in article.authors)
                     {
                         <li>
-                            @author.FirstOrDefault()?.name
+                            @author.name
                         </li>
                     }
                 </ul>
-
-                Journal: @article.journal.name<br>
-                Citations: @article.citationStats.numCitations
+                Journal: @(article.journal?.name ?? "N/A")
                 <br>
-                <a href="@article.links.FirstOrDefault()?.url">Link</a>
+                <a href="@article.url">Link</a>
             </p>
             <br>
         }
@@ -69,23 +64,24 @@
         @foreach (var article in Model.Articles.Where(a => a.bias == Enums.BiasEnum.Against))
         {
             <p>
-                <b>@article.title.text</b>
+                <b>@article.title</b>
                 <br>
-                <i>@article.paperAbstractTruncated</i>
+
+                <i>@article.abstr</i>
                 <br>
-                Authors:<br>
+                Authors:
+                <br>
                 <ul>
-                    @foreach (var author in article.authors.Select(x => x))
+                    @foreach (var author in article.authors)
                     {
                         <li>
-                            @author.FirstOrDefault()?.name
+                            @author.name
                         </li>
                     }
                 </ul>
-                Journal: @article.journal.name<br>
-                Citations: @article.citationStats.numCitations
+                Journal: @(article.journal?.name ?? "N/A")
                 <br>
-                <a href="@article.links.FirstOrDefault()?.url">Link</a>
+                <a href="@article.url">Link</a>
             </p>
             <br>
         }

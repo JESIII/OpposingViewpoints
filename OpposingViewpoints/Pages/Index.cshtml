@@ -1,4 +1,5 @@
 ﻿@page
+@using OpposingViewpoints.Models;
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
@@ -9,5 +10,15 @@
         <input type="text" id="searchTerm" name="searchTerm" placeholder="Enter a topic you'd like opposing viewpoints on'" />
         <input type="submit" value="Submit" asp-page-handler="SearchArticles" />
     </form>
+    @if (Model.SearchesInCache == true)
+    {
+        <a>Recent Searches:</a>
 
+        <br>
+        @foreach (CacheModel cachedSearch in Model.CachedSearches.Values)
+        {
+            <a>@cachedSearch.SearchTerm</a> <br>
+        }
+
+    }
 </div>

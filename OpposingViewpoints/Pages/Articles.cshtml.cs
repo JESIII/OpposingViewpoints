@@ -9,14 +9,14 @@ namespace OpposingViewpoints.Pages
     public class ArticlesModel : PageModel
     {
         private readonly IHttpContextAccessor _contextAccessor;
-        public List<SSArticle> Articles { get; set; }
+        public List<SSApiPaper> Articles { get; set; }
         public ArticlesModel(IHttpContextAccessor contextAccessor)
         {
             _contextAccessor = contextAccessor;
         }
         public void OnGet()
         {
-            var articles = JsonSerializer.Deserialize<List<SSArticle>>(_contextAccessor.HttpContext.Session.GetString("Articles"));
+            var articles = JsonSerializer.Deserialize<List<SSApiPaper>>(_contextAccessor.HttpContext.Session.GetString("Articles"));
             if (articles != null)
             {
                 Articles = articles;

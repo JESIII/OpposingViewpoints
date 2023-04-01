@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using RestSharp;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Caching.Memory;
+using System.Collections.Specialized;
 
 namespace OpposingViewpoints.Pages
 {
@@ -15,8 +16,9 @@ namespace OpposingViewpoints.Pages
     {
         [BindProperty]
         public string searchTerm { get; set; }
-        public List<SSArticle> Articles { get; set; }
-        public bool ArticlesInCache { get; set; }
+        public bool SearchesInCache { get; set; }
+        [ViewData]
+        public OrderedDictionary CachedSearches { get; set; } = new OrderedDictionary();
 
         private readonly ILogger<IndexModel> _logger;
         private readonly IHttpContextAccessor _contextAccessor;
@@ -33,61 +35,82 @@ namespace OpposingViewpoints.Pages
 
         public void OnGet()
         {
-            if (_memoryCache.TryGetValue("Articles", out List<SSArticle> Articles))
+            var cachedSearches = new OrderedDictionary();
+            if (_memoryCache.TryGetValue("CachedSearches", out cachedSearches))
             {
-                ArticlesInCache = true;
+                if (cachedSearches.Count > 0) 
+                {
+                    CachedSearches = cachedSearches;
+                    SearchesInCache = true;
+                }
             }
         }
 
-        public async Task CacheData(List<SSArticle> articles, string searchTerm)
+        public async Task CacheData(List<SSApiPaper> articles, string searchTerm)
         {
-            List<string> searchTerms; 
-            _memoryCache.TryGetValue("SearchTerms", out searchTerms);
-            if (searchTerms != null)
+            if (CachedSearches.Contains(searchTerm.ToLower()))
             {
-                searchTerms.Add(searchTerm);
+                return;
             }
-            else
+            if (CachedSearches.Count > 10)
             {
-                _memoryCache.Set("SearchTerms", new List<string> { searchTerm }, TimeSpan.FromMinutes(60));
+                CachedSearches.RemoveAt(CachedSearches.Count - 1);
             }
-            _memoryCache.Set($"Articles-{searchTerm}", articles, TimeSpan.FromMinutes(60));
+            CachedSearches.Insert(0, searchTerm.ToLower(), new CacheModel
+            {
+                Date = DateTime.Now,
+                SearchTerm = searchTerm,
+                Articles = articles
+            });
+            _memoryCache.Set("CachedSearches", CachedSearches, TimeSpan.FromDays(7));
         }
 
         public async Task<IActionResult> OnPostSearchArticlesAsync()
         {
 
             var articles = await GetArticlesAndBiasesAsync(searchTerm);
-            var articlesJson = JsonSerializer.Serialize(articles.results);
+            var articlesJson = JsonSerializer.Serialize(articles.data);
             _contextAccessor.HttpContext.Session.SetString("Articles", articlesJson);
-
-            
+            await CacheData(articles.data, searchTerm);
             return RedirectToPage("Articles");
         }
 
-        public async Task<SSResponse> GetScholarlyArticlesAsync(string topic)
+        //public async Task<SSResponse> GetScholarlyArticlesAsync(string topic)
+        //{
+        //    var options = new RestClientOptions("https://www.semanticscholar.org")
+        //    {
+        //        MaxTimeout = -1,
+        //    };
+        //    var client = new RestClient(options);
+        //    var request = new RestRequest("/api/1/search", Method.Post);
+        //    request.AddHeader("Content-Type", "application/json");
+        //    request.AddHeader("Cookie", "tid=rBIABmQk/8lnMQAKBUXOAg==");
+        //    var body = @"{""queryString"":""" + topic + @""",""page"":1,""pageSize"":10,""sort"":""relevance"",""authors"":[],""coAuthors"":[],""venues"":[],""yearFilter"":null,""requireViewablePdf"":false,""fieldsOfStudy"":[],""useFallbackRankerService"":false,""useFallbackSearchCluster"":false,""hydrateWithDdb"":true,""includeTldrs"":true,""performTitleMatch"":true,""includeBadges"":true,""tldrModelVersion"":""v2.0.0"",""getQuerySuggestions"":false,""useS2FosFields"":true}";
+        //    request.AddStringBody(body, DataFormat.Json);
+        //    RestResponse response = await client.ExecuteAsync(request);
+        //    var responseObject = JsonSerializer.Deserialize<SSResponse>(response.Content);
+        //    return responseObject;
+        //}
+
+        public async Task<SSApiResponse> GetScholarlyArticlesAsync(string topic)
         {
-            var options = new RestClientOptions("https://www.semanticscholar.org")
+            var options = new RestClientOptions("http://api.semanticscholar.org")
             {
                 MaxTimeout = -1,
             };
             var client = new RestClient(options);
-            var request = new RestRequest("/api/1/search", Method.Post);
-            request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Cookie", "tid=rBIABmQk/8lnMQAKBUXOAg==");
-            var body = @"{""queryString"":""" + topic + @""",""page"":1,""pageSize"":10,""sort"":""relevance"",""authors"":[],""coAuthors"":[],""venues"":[],""yearFilter"":null,""requireViewablePdf"":false,""fieldsOfStudy"":[],""useFallbackRankerService"":false,""useFallbackSearchCluster"":false,""hydrateWithDdb"":true,""includeTldrs"":true,""performTitleMatch"":true,""includeBadges"":true,""tldrModelVersion"":""v2.0.0"",""getQuerySuggestions"":false,""useS2FosFields"":true}";
-            request.AddStringBody(body, DataFormat.Json);
+            var request = new RestRequest($"/graph/v1/paper/search?query={topic.Replace(' ', '+')}&limit=15&fields=title,authors,abstract,url", Method.Get);
             RestResponse response = await client.ExecuteAsync(request);
-            var responseObject = JsonSerializer.Deserialize<SSResponse>(response.Content);
+            var responseObject = JsonSerializer.Deserialize<SSApiResponse>(response.Content);
             return responseObject;
         }
 
-        public async Task<SSResponse> GetArticlesAndBiasesAsync(string topic)
+        public async Task<SSApiResponse> GetArticlesAndBiasesAsync(string topic)
         {
             var articles = await GetScholarlyArticlesAsync(topic);
-            foreach (var article in articles.results)
+            foreach (var article in articles.data)
             {
-                var text = article.paperAbstract.text;
+                var text = article.@abstract;
                 var bias = await AnalyzeTextChatGPTAsync(topic, text);
                 article.bias = bias;
             }

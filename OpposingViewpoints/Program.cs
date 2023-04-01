@@ -1,16 +1,16 @@
+using Microsoft.Extensions.Caching.Memory;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
 
 builder.Services.AddSession();
 
-builder.Services.AddMemoryCache(options =>
-{
-    options.SizeLimit = 1024; // Maximum size of the cache in megabytes
-});
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 
