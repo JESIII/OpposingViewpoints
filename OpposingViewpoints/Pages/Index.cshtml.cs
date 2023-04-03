@@ -9,6 +9,7 @@ using RestSharp;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Caching.Memory;
 using System.Collections.Specialized;
+using System.ComponentModel;
 
 namespace OpposingViewpoints.Pages
 {
@@ -48,31 +49,72 @@ namespace OpposingViewpoints.Pages
 
         public async Task CacheData(List<SSApiPaper> articles, string searchTerm)
         {
-            if (CachedSearches.Contains(searchTerm.ToLower()))
+            OrderedDictionary cachedSearches;
+            if (_memoryCache.TryGetValue("CachedSearches", out cachedSearches))
             {
-                return;
+                if (cachedSearches.Count > 0)
+                {
+                    if (cachedSearches.Contains(searchTerm.ToLower()))
+                    {
+                        return;
+                    }
+                    if (cachedSearches.Count > 10)
+                    {
+                        cachedSearches.RemoveAt(cachedSearches.Count - 1);
+                    }
+                }
             }
-            if (CachedSearches.Count > 10)
+            if (cachedSearches == null)
             {
-                CachedSearches.RemoveAt(CachedSearches.Count - 1);
+                cachedSearches = new OrderedDictionary();
             }
-            CachedSearches.Insert(0, searchTerm.ToLower(), new CacheModel
+            cachedSearches.Insert(0, searchTerm.ToLower(), new CacheModel
             {
                 Date = DateTime.Now,
                 SearchTerm = searchTerm,
                 Articles = articles
             });
-            _memoryCache.Set("CachedSearches", CachedSearches, TimeSpan.FromDays(7));
+            _memoryCache.Set("CachedSearches", cachedSearches, TimeSpan.FromDays(7));
+        }
+
+        public async Task<List<SSApiPaper>> GetArticlesFromCache(string searchTerm)
+        {
+            OrderedDictionary cachedSearches;
+            if (_memoryCache.TryGetValue("CachedSearches", out cachedSearches))
+            {
+                if (cachedSearches.Contains(searchTerm.ToLower()))
+                {
+                    var cachedSearch = cachedSearches[searchTerm.ToLower()] as CacheModel;
+                    return cachedSearch.Articles;
+                }
+            }
+            return new List<SSApiPaper>();
         }
 
         public async Task<IActionResult> OnPostSearchArticlesAsync()
         {
-
+            List<SSApiPaper> articlesFromCache = await GetArticlesFromCache(searchTerm);
+            if (articlesFromCache.Count > 0) 
+            {
+                _contextAccessor.HttpContext.Session.SetString("Articles", JsonSerializer.Serialize(articlesFromCache));
+                return RedirectToPage("Articles");
+            }
             var articles = await GetArticlesAndBiasesAsync(searchTerm);
             var articlesJson = JsonSerializer.Serialize(articles.data);
             _contextAccessor.HttpContext.Session.SetString("Articles", articlesJson);
             await CacheData(articles.data, searchTerm);
             return RedirectToPage("Articles");
+        }
+        public async Task<IActionResult> OnGetCachedArticlesAsync()
+        {
+            var searchTerm = Request.Query.FirstOrDefault().Value.ToString();
+            List<SSApiPaper> articlesFromCache = await GetArticlesFromCache(searchTerm);
+            if (articlesFromCache.Count > 0)
+            {
+                _contextAccessor.HttpContext.Session.SetString("Articles", JsonSerializer.Serialize(articlesFromCache));
+                return RedirectToPage("Articles");
+            }
+            return NotFound();
         }
 
         //public async Task<SSResponse> GetScholarlyArticlesAsync(string topic)
@@ -99,7 +141,7 @@ namespace OpposingViewpoints.Pages
                 MaxTimeout = -1,
             };
             var client = new RestClient(options);
-            var request = new RestRequest($"/graph/v1/paper/search?query={topic.Replace(' ', '+')}&limit=15&fields=title,authors,abstract,url", Method.Get);
+            var request = new RestRequest($"/graph/v1/paper/search?query={topic.Replace(' ', '+')}&limit=10&fields=title,authors,abstract,url", Method.Get);
             RestResponse response = await client.ExecuteAsync(request);
             var responseObject = JsonSerializer.Deserialize<SSApiResponse>(response.Content);
             return responseObject;

@@ -17,7 +17,8 @@
         <br>
         @foreach (CacheModel cachedSearch in Model.CachedSearches.Values)
         {
-            <a>@cachedSearch.SearchTerm</a> <br>
+            <a asp-page-handler="CachedArticles" asp-route-value="@cachedSearch.SearchTerm">@cachedSearch.SearchTerm</a>
+            <br>
         }
 
     }
