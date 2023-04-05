@@ -7,7 +7,7 @@
 <div class="text-center">
     <h1 class="display-4">Search for opposing articles</h1>
     <form method="post">
-        <input type="text" id="searchTerm" name="searchTerm" placeholder="Enter a topic you'd like opposing viewpoints on'" />
+        <input type="text" id="searchTerm" name="searchTerm" style="width:350px"placeholder="Enter a topic you'd like opposing viewpoints on" />
         <input type="submit" value="Submit" asp-page-handler="SearchArticles" />
     </form>
     @if (Model.SearchesInCache == true)
