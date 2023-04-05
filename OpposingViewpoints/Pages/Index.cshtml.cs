@@ -141,7 +141,7 @@ namespace OpposingViewpoints.Pages
                 MaxTimeout = -1,
             };
             var client = new RestClient(options);
-            var request = new RestRequest($"/graph/v1/paper/search?query={topic.Replace(' ', '+')}&limit=10&fields=title,authors,abstract,url", Method.Get);
+            var request = new RestRequest($"/graph/v1/paper/search?query={topic.Replace(' ', '+')}&limit=10&fields=title,authors,abstract,url,journal,year,citationCount", Method.Get);
             RestResponse response = await client.ExecuteAsync(request);
             var responseObject = JsonSerializer.Deserialize<SSApiResponse>(response.Content);
             return responseObject;

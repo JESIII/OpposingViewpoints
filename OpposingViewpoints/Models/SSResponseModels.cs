@@ -1,5 +1,6 @@
 ﻿using OpposingViewpoints.Enums;
 using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
 
 namespace OpposingViewpoints.Models
 {
@@ -17,15 +18,24 @@ namespace OpposingViewpoints.Models
         {
             get { return this.@abstract; }
         }
+        public string abstrTrunc
+        {
+            get
+            {
+                return this.@abstract?.Length > 300 ? this.@abstract.Substring(0, 300) + "..." : this.@abstract;
+            }
+        }
         public string url { get; set; }
         public List<SSApiAuthor> authors { get; set; }
         public BiasEnum bias { get; set; }
         public SSApiJournal journal { get; set; }
+        public int year { get; set; }
+        public int citationCount { get; set; }
     }
 
     public class SSApiJournal
     {
-        public string name { get; set; } = "N/A";
+        public string name { get; set; }
     }
 
     public class SSApiAuthor

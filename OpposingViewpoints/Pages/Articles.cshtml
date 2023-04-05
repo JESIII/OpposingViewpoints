@@ -13,7 +13,7 @@
                 <b>@article.title</b>
                 <br>
 
-                <i>@article.abstr</i>
+                <i>@article.abstrTrunc</i>
                 <br>
                 Authors:
                 <br>
@@ -25,7 +25,11 @@
                         </li>
                     }
                 </ul>
-                Journal: @(article.journal?.name ?? "N/A")
+                Journal: @article?.journal?.name
+                <br>
+                Year: @article.year
+                <br>
+                Times Cited: @article.citationCount
                 <br>
                 <a href="@article.url">Link</a>
             </p>
@@ -40,7 +44,7 @@
                 <b>@article.title</b>
                 <br>
 
-                <i>@article.abstr</i>
+                <i>@article.abstrTrunc</i>
                 <br>
                 Authors:
                 <br>
@@ -52,7 +56,11 @@
                         </li>
                     }
                 </ul>
-                Journal: @(article.journal?.name ?? "N/A")
+                Journal: @(article?.journal?.name)
+                <br>
+                Year: @article.year
+                <br>
+                Times Cited: @article.citationCount
                 <br>
                 <a href="@article.url">Link</a>
             </p>
@@ -67,7 +75,7 @@
                 <b>@article.title</b>
                 <br>
 
-                <i>@article.abstr</i>
+                <i>@article.abstrTrunc</i>
                 <br>
                 Authors:
                 <br>
@@ -79,7 +87,11 @@
                         </li>
                     }
                 </ul>
-                Journal: @(article.journal?.name ?? "N/A")
+                Journal: @(article?.journal?.name)
+                <br>
+                Year: @article.year
+                <br>
+                Times Cited: @article.citationCount
                 <br>
                 <a href="@article.url">Link</a>
             </p>
