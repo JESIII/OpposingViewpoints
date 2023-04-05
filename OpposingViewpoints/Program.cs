@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,10 @@ builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
 
 builder.Services.AddSession();
 
-builder.Services.AddMemoryCache();
+builder.Services.AddMemoryCache(options =>
+{
+    options.SizeLimit = 128; // Maximum size of the cache in megabytes
+});
 
 var app = builder.Build();
 

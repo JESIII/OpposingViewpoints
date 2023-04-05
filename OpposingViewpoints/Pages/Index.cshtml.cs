@@ -74,7 +74,7 @@ namespace OpposingViewpoints.Pages
                 SearchTerm = searchTerm,
                 Articles = articles
             });
-            _memoryCache.Set("CachedSearches", cachedSearches, TimeSpan.FromDays(7));
+            _memoryCache.Set("CachedSearches", cachedSearches, TimeSpan.FromDays(1));
         }
 
         public async Task<List<SSApiPaper>> GetArticlesFromCache(string searchTerm)
