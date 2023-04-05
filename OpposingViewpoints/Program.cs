@@ -11,10 +11,7 @@ builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
 
 builder.Services.AddSession();
 
-builder.Services.AddMemoryCache(options =>
-{
-    options.SizeLimit = 128; // Maximum size of the cache in megabytes
-});
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 
