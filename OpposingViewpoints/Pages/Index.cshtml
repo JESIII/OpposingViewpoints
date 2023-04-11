@@ -25,9 +25,9 @@
     }
 </div>
 <script>
-    let terms = ["gun rights", "womens rights", "abortion", "cancel culture", "free speech", "affirmative action", "animal testing", "death sentence"]
+    let terms = ["climate change", "gun rights", "immigration", "womens rights", "LGBTQ+ rights", "abortion", "cancel culture", "free speech", "affirmative action", "animal testing", "legalization of drugs", "death sentence", "privacy and surveillance", "mandatory vaccinations", "wealth distribution", "artificial intelligence in the workforce", "cultural appropriation", "nuclear power", "religious freedom", "GMOs", "assisted suicide"]
     async function asyncWhileLoop() {
-        let i = Math.floor(Math.random() * (7 - 0 + 1)) + 0;
+        let i = Math.floor(Math.random() * (terms.length-1 - 0 + 1)) + 0;
         while (true) {
             if (i >= terms.length){
                 i = 0;

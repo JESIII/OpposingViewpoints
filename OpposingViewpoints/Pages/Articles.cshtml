@@ -5,7 +5,7 @@
 }
 
 <div class="row" style="padding-top:10px;">
-    <div class="col card border-success mb-3">
+    <div class="col card border-success mb-3" style="display:inline">
         <h2 style="color:white">For</h2>
         @foreach (var article in Model.Articles.Where(a => a.bias == Enums.BiasEnum.For))
         {
@@ -35,7 +35,7 @@
             </div>
         }
     </div>
-    <div class="col card border-info mb-3">
+    <div class="col card border-info mb-3" style="display:inline">
         <h2 style="color:white">Neutral</h2>
         @foreach (var article in Model.Articles.Where(a => a.bias == Enums.BiasEnum.Neutral))
         {
@@ -65,7 +65,7 @@
             </div>
         }
     </div>
-    <div class="col card border-danger mb-3">
+    <div class="col card border-danger mb-3" style="display:inline">
         <h2 style="color:white">Against</h2>
         @foreach (var article in Model.Articles.Where(a => a.bias == Enums.BiasEnum.Against))
         {
