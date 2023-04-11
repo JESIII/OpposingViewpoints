@@ -29,8 +29,8 @@
     async function asyncWhileLoop() {
         let i = Math.floor(Math.random() * (7 - 0 + 1)) + 0;
         while (true) {
-            if (i > terms.length + 1){
-                Math.floor(Math.random() * (7 - 0 + 1)) + 0;
+            if (i >= terms.length){
+                i = 0;
             }
             let term = terms[i];
             for (let j = 0; j < term.length + 1; j++){
