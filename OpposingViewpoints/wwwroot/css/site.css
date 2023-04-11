@@ -16,3 +16,7 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+ins.adsbygoogle[data-ad-status="unfilled"] {
+    display: none !important;
+}

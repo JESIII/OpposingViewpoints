@@ -4,98 +4,95 @@
     ViewData["Title"] = "Articles";
 }
 
-<div class="row">
-    <div class="col" style="border:2px solid MediumSeaGreen;">
-        <h2>For</h2>
+<div class="row" style="padding-top:10px;">
+    <div class="col card border-success mb-3">
+        <h2 style="color:white">For</h2>
         @foreach (var article in Model.Articles.Where(a => a.bias == Enums.BiasEnum.For))
         {
-            <p>
-                <b>@article.title</b>
-                <br>
-
-                <i>@article.abstrTrunc</i>
-                <br>
-                Authors:
-                <br>
-                <ul>
-                    @foreach (var author in article.authors)
-                    {
-                        <li>
-                            @author.name
-                        </li>
-                    }
-                </ul>
-                Journal: @article?.journal?.name
-                <br>
-                Year: @article.year
-                <br>
-                Times Cited: @article.citationCount
-                <br>
-                <a href="@article.url">Link</a>
-            </p>
-            <br>
+            <div class="card-body">
+                <p class="card-text">
+                    <b class="card-title">@article.title</b>
+                    <i class="card-text">@article.abstrTrunc</i>
+                    <br>
+                    Authors:
+                    <br>
+                    <ul>
+                        @foreach (var author in article.authors)
+                        {
+                            <li>
+                                @author.name
+                            </li>
+                        }
+                    </ul>
+                    Journal: @article?.journal?.name
+                    <br>
+                    Year: @article.year
+                    <br>
+                    Times Cited: @article.citationCount
+                    <br>
+                    <a href="@article.url">Link</a>
+                </p>
+            </div>
         }
     </div>
-    <div class="col" style="border:2px solid grey">
-        <h2>Neutral</h2>
+    <div class="col card border-info mb-3">
+        <h2 style="color:white">Neutral</h2>
         @foreach (var article in Model.Articles.Where(a => a.bias == Enums.BiasEnum.Neutral))
         {
-            <p>
-                <b>@article.title</b>
-                <br>
-
-                <i>@article.abstrTrunc</i>
-                <br>
-                Authors:
-                <br>
-                <ul>
-                    @foreach (var author in article.authors)
-                    {
-                        <li>
-                            @author.name
-                        </li>
-                    }
-                </ul>
-                Journal: @(article?.journal?.name)
-                <br>
-                Year: @article.year
-                <br>
-                Times Cited: @article.citationCount
-                <br>
-                <a href="@article.url">Link</a>
-            </p>
-            <br>
+            <div class="card-body">
+                <p class="card-text">
+                    <h5 class="card-title">@article.title</h5>
+                    <i>@article.abstrTrunc</i>
+                    <br>
+                    Authors:
+                    <br>
+                    <ul>
+                        @foreach (var author in article.authors)
+                        {
+                            <li>
+                                @author.name
+                            </li>
+                        }
+                    </ul>
+                    Journal: @(article?.journal?.name)
+                    <br>
+                    Year: @article.year
+                    <br>
+                    Times Cited: @article.citationCount
+                    <br>
+                    <a href="@article.url">Link</a>
+                </p>
+            </div>
         }
     </div>
-    <div class="col" style="border:2px solid Tomato;">
-        <h2>Against</h2>
+    <div class="col card border-danger mb-3">
+        <h2 style="color:white">Against</h2>
         @foreach (var article in Model.Articles.Where(a => a.bias == Enums.BiasEnum.Against))
         {
-            <p>
-                <b>@article.title</b>
-                <br>
-
-                <i>@article.abstrTrunc</i>
-                <br>
-                Authors:
-                <br>
-                <ul>
-                    @foreach (var author in article.authors)
-                    {
-                        <li>
-                            @author.name
-                        </li>
-                    }
-                </ul>
-                Journal: @(article?.journal?.name)
-                <br>
-                Year: @article.year
-                <br>
-                Times Cited: @article.citationCount
-                <br>
-                <a href="@article.url">Link</a>
-            </p>
-            <br>
+            <div class="card-body">
+                <p class="card-text">
+                    <h5 class="card-title">@article.title</h5>
+                    <i>@article.abstrTrunc</i>
+                    <br>
+                    Authors:
+                    <br>
+                    <ul>
+                        @foreach (var author in article.authors)
+                        {
+                            <li>
+                                @author.name
+                            </li>
+                        }
+                    </ul>
+                    Journal: @(article?.journal?.name)
+                    <br>
+                    Year: @article.year
+                    <br>
+                    Times Cited: @article.citationCount
+                    <br>
+                    <a href="@article.url">Link</a>
+                </p>
+            </div>
         }
     </div>
 </div>

@@ -6,10 +6,12 @@
 }
 <div class="text-center">
     <h1 class="display-4">Search for opposing articles</h1>
-    <form method="post">
-        <input type="text" id="searchTerm" name="searchTerm" style="width:350px"placeholder="Enter a topic you'd like opposing viewpoints on" />
-        <input type="submit" value="Submit" asp-page-handler="SearchArticles" />
+    <div class="form">
+        <form method="post" class="d-inline-flex">
+        <input class="form-control me-sm-2" type="text" id="searchTerm" name="searchTerm" style="width:350px" placeholder="Enter a topic you'd like opposing viewpoints on" />
+        <input id="searchBtn" class="btn btn-secondary my-2 my-sm-0" type="submit" value="Submit" asp-page-handler="SearchArticles" />
     </form>
+    </div>
     @if (Model.SearchesInCache == true)
     {
         <a>Recent Searches:</a>
@@ -20,6 +22,29 @@
             <a asp-page-handler="CachedArticles" asp-route-value="@cachedSearch.SearchTerm">@cachedSearch.SearchTerm</a>
             <br>
         }
-
     }
 </div>
+<script>
+    let terms = ["gun rights", "womens rights", "abortion", "cancel culture", "free speech", "affirmative action", "animal testing", "death sentence"]
+    async function asyncWhileLoop() {
+        let i = Math.floor(Math.random() * (7 - 0 + 1)) + 0;
+        while (true) {
+            if (i > terms.length + 1){
+                Math.floor(Math.random() * (7 - 0 + 1)) + 0;
+            }
+            let term = terms[i];
+            for (let j = 0; j < term.length + 1; j++){
+                document.getElementById("searchTerm").placeholder = term.substring(0, j);
+                await new Promise(resolve => setTimeout(resolve, 50));
+            }
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            for (let j = term.length + 1; j >= 0; j--){
+                document.getElementById("searchTerm").placeholder = term.substring(0, j);
+                await new Promise(resolve => setTimeout(resolve, 50));
+            }
+            await new Promise(resolve => setTimeout(resolve, 100));
+            i++;
+        }
+    }
+    asyncWhileLoop();
+</script>
