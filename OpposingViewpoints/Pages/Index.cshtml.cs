@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Caching.Memory;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using HtmlAgilityPack;
 
 namespace OpposingViewpoints.Pages
 {
@@ -22,6 +23,9 @@ namespace OpposingViewpoints.Pages
 
         [ViewData]
         public OrderedDictionary CachedSearches { get; set; } = new OrderedDictionary();
+
+        public bool TopicsInCache { get; set; }
+        public List<ControversialTopic> ControversialTopics { get; set; }
 
         private readonly ILogger<IndexModel> _logger;
         private readonly IHttpContextAccessor _contextAccessor;
@@ -36,8 +40,20 @@ namespace OpposingViewpoints.Pages
             _memoryCache = memoryCache;
         }
 
-        public void OnGet()
+        public async Task OnGetAsync()
         {
+            var topics = new List<ControversialTopic>();
+            if (_memoryCache.TryGetValue("TodaysTopics", out topics))
+            {
+                TopicsInCache = true;
+                ControversialTopics = topics;
+            }
+            else
+            {
+                topics = await GetControversialTopics();
+                TopicsInCache = true;
+                ControversialTopics = topics;
+            }
             var cachedSearches = new OrderedDictionary();
             if (_memoryCache.TryGetValue("CachedSearches", out cachedSearches))
             {
@@ -49,7 +65,12 @@ namespace OpposingViewpoints.Pages
             }
         }
 
-        public async Task CacheData(List<SSApiPaper> articles, string searchTerm)
+        public void CacheTodaysTopics(List<ControversialTopic> proconResponses)
+        {
+            _memoryCache.Set("TodaysTopics", proconResponses, TimeSpan.FromDays(1));
+        }
+
+        public async Task CacheSearchResults(List<SSApiPaper> articles, string searchTerm)
         {
             OrderedDictionary cachedSearches;
             if (_memoryCache.TryGetValue("CachedSearches", out cachedSearches))
@@ -104,7 +125,7 @@ namespace OpposingViewpoints.Pages
             var articles = await GetArticlesAndBiasesAsync(searchTerm);
             var articlesJson = JsonSerializer.Serialize(articles.data);
             _contextAccessor.HttpContext.Session.SetString("Articles", articlesJson);
-            await CacheData(articles.data, searchTerm);
+            await CacheSearchResults(articles.data, searchTerm);
             return RedirectToPage("Articles");
         }
         public async Task<IActionResult> OnGetCachedArticlesAsync()
@@ -168,6 +189,48 @@ namespace OpposingViewpoints.Pages
             BiasEnum bias;
             Enum.TryParse<BiasEnum>(responseObject?.choices?.FirstOrDefault()?.message?.content, out bias);
             return bias;
+        }
+
+        public async Task<List<ControversialTopic>> GetControversialTopics()
+        {
+            var url = "https://www.procon.org/";
+            var httpClient = new HttpClient();
+            var html = await httpClient.GetStringAsync(url);
+
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(html);
+
+            var responses = new List<ControversialTopic>();
+            var newTopicsList = htmlDoc.DocumentNode.SelectSingleNode("//h4[contains(text(),'NEW TOPICS')]/following-sibling::ul");
+            var topics = newTopicsList.SelectNodes("./li/a");
+
+            foreach (var topic in topics)
+            {
+                try
+                {
+                    var href = topic.Attributes["href"].Value;
+                    var text = topic.InnerHtml;
+                    var topicHtml = await httpClient.GetStringAsync(href);
+                    var topicHtmlDoc = new HtmlDocument();
+                    topicHtmlDoc.LoadHtml(topicHtml);
+                    var topicDescriptionNode = topicHtmlDoc.DocumentNode.SelectSingleNode("//meta[@property='og:description']");
+                    var topicImageNode = topicHtmlDoc.DocumentNode.SelectSingleNode("//meta[@property='og:image']");
+                    var topicDescription = topicDescriptionNode.Attributes["content"].Value;
+                    var topicImage = topicImageNode.Attributes["content"].Value;
+
+                    responses.Add(new ControversialTopic
+                    {
+                        image = topicImage,
+                        description = topicDescription,
+                        topic = text,
+                        link = href
+                    });
+
+                }
+                catch { }
+            }
+            CacheTodaysTopics(responses);
+            return responses;
         }
     }
 }

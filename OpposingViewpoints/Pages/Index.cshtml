@@ -8,11 +8,11 @@
     <h1 class="display-4">Search for opposing articles</h1>
     <div class="form">
         <form method="post" class="d-inline-flex">
-        <input class="form-control me-sm-2" type="text" id="searchTerm" name="searchTerm" style="width:350px" placeholder="Enter a topic you'd like opposing viewpoints on" />
-        <input id="searchBtn" class="btn btn-secondary my-2 my-sm-0" type="submit" value="Submit" asp-page-handler="SearchArticles" />
-    </form>
+            <input class="form-control me-sm-2" type="text" id="searchTerm" name="searchTerm" style="width:350px" placeholder="Enter a topic you'd like opposing viewpoints on" />
+            <input id="searchBtn" class="btn btn-secondary my-2 my-sm-0" type="submit" value="Submit" asp-page-handler="SearchArticles" />
+        </form>
     </div>
-    @if (Model.SearchesInCache == true)
+    @if (Model.SearchesInCache)
     {
         <a>Recent Searches:</a>
 
@@ -23,22 +23,40 @@
             <br>
         }
     }
+
+    <br />
+    <h2>Popular Issues</h2>
+    <div id="carouselExampleSlidesOnly" class="carousel-dark slide" data-bs-ride="carousel" style="margin: auto;width: 800px; height: 400px;">
+        <div class="carousel-inner">
+            @foreach (var topic in Model.ControversialTopics)
+            {
+                <div class="carousel-item @(topic == Model.ControversialTopics.First() ? "active" : "")" style="width: 800px; height: 400px; overflow: hidden;">
+                    <img class="d-block w-100" src="@topic.image" alt="..." style="width: 800px; height: 400px; object-fit: cover; object-position: 50% 50%;">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5><a class="text-dark" style="text-decoration: none;" href="@topic.link">@(topic.topic.Replace("&#8220;", "\"").Replace("&#8221;", "\""))</a></h5>
+                        <p>@(topic.description.Length > 50 ? topic.description.Substring(0, 100) + "..." : topic.description)</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
 </div>
 <script>
     let terms = ["climate change", "gun rights", "immigration", "womens rights", "LGBTQ+ rights", "abortion", "cancel culture", "free speech", "affirmative action", "animal testing", "legalization of drugs", "death sentence", "privacy and surveillance", "mandatory vaccinations", "wealth distribution", "artificial intelligence in the workforce", "cultural appropriation", "nuclear power", "religious freedom", "GMOs", "assisted suicide"]
     async function asyncWhileLoop() {
-        let i = Math.floor(Math.random() * (terms.length-1 - 0 + 1)) + 0;
+        let i = Math.floor(Math.random() * (terms.length - 1 - 0 + 1)) + 0;
         while (true) {
-            if (i >= terms.length){
+            if (i >= terms.length) {
                 i = 0;
             }
             let term = terms[i];
-            for (let j = 0; j < term.length + 1; j++){
+            for (let j = 0; j < term.length + 1; j++) {
                 document.getElementById("searchTerm").placeholder = term.substring(0, j);
                 await new Promise(resolve => setTimeout(resolve, 50));
             }
             await new Promise(resolve => setTimeout(resolve, 2000));
-            for (let j = term.length + 1; j >= 0; j--){
+            for (let j = term.length + 1; j >= 0; j--) {
                 document.getElementById("searchTerm").placeholder = term.substring(0, j);
                 await new Promise(resolve => setTimeout(resolve, 50));
             }
