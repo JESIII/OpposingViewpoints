@@ -26,15 +26,19 @@
 
     <br />
     <h2>Popular Issues</h2>
-    <div id="carouselExampleSlidesOnly" class="carousel-dark slide" data-bs-ride="carousel" style="margin: auto;width: 800px; height: 400px;">
+    <div id="carouselExampleSlidesOnly" class="carousel-dark slide" data-bs-ride="carousel" style="margin: auto;width: 800px; height: 600px;">
         <div class="carousel-inner">
             @foreach (var topic in Model.ControversialTopics)
             {
-                <div class="carousel-item @(topic == Model.ControversialTopics.First() ? "active" : "")" style="width: 800px; height: 400px; overflow: hidden;">
-                    <img class="d-block w-100" src="@topic.image" alt="..." style="width: 800px; height: 400px; object-fit: cover; object-position: 50% 50%;">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h5><a class="text-dark" style="text-decoration: none;" href="@topic.link">@(topic.topic.Replace("&#8220;", "\"").Replace("&#8221;", "\""))</a></h5>
-                        <p>@(topic.description.Length > 50 ? topic.description.Substring(0, 100) + "..." : topic.description)</p>
+                <div class="carousel-item @(topic == Model.ControversialTopics.First() ? "active" : "")" style="width: 800px; height: 600px; overflow: hidden;">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title"><a class="text" style="text-decoration: none;" href="@topic.link">@(topic.topic.Replace("&#8220;", "\"").Replace("&#8221;", "\""))</a></h5>
+                        </div>
+                        <img class="d-block w-100" src="@topic.image" alt="..." style="width: 800px; height: 400px; object-fit: cover; object-position: 50% 50%;">
+                        <div class="card-body">
+                            <p>@(topic.description.Length > 200 ? topic.description.Substring(0, 200) + "..." : topic.description)</p>
+                        </div>
                     </div>
                 </div>
             }
