@@ -7,9 +7,9 @@
 <div class="text-center">
     <h1 class="display-4">Search for opposing articles</h1>
     <div class="form">
-        <form method="post" class="d-inline-flex">
-            <input class="form-control me-sm-2" type="text" id="searchTerm" name="searchTerm" style="width:350px" placeholder="Enter a topic you'd like opposing viewpoints on" />
-            <input id="searchBtn" class="btn btn-secondary my-2 my-sm-0" type="submit" value="Submit" asp-page-handler="SearchArticles" />
+        <form method="post" class="d-inline-flex justify-content-center" style="max-width:70%;">
+            <input class="form-control" type="text" id="searchTerm" name="searchTerm" style="width:350px;" placeholder="Enter a topic you'd like opposing viewpoints on" />
+            <input id="searchBtn" class="btn btn-secondary" type="submit" value="Submit" asp-page-handler="SearchArticles" />
         </form>
     </div>
     @if (Model.SearchesInCache)
@@ -26,16 +26,16 @@
 
     <br />
     <h2>Popular Issues</h2>
-    <div id="carouselExampleSlidesOnly" class="carousel-dark slide" data-bs-ride="carousel" style="margin: auto;width: 800px; height: 600px;">
+    <div id="carouselExampleSlidesOnly" class="carousel-dark slide" data-bs-ride="carousel" style="margin: auto;width: 80%; height: 50%;" display="inline">
         <div class="carousel-inner">
             @foreach (var topic in Model.ControversialTopics)
             {
-                <div class="carousel-item @(topic == Model.ControversialTopics.First() ? "active" : "")" style="width: 800px; height: 600px; overflow: hidden;">
+                <div class="carousel-item @(topic == Model.ControversialTopics.First() ? "active" : "")" style="width: 100%; height: 100%; overflow: hidden;">
                     <div class="card mb-3">
                         <div class="card-body">
-                            <h5 class="card-title"><a class="text" style="text-decoration: none;" href="@topic.link">@(topic.topic.Replace("&#8220;", "\"").Replace("&#8221;", "\""))</a></h5>
+                            <h5 class="card-title"><a class="text" style="text-decoration: none;" href="@topic.link">@(topic.topic)</a></h5>
                         </div>
-                        <img class="d-block w-100" src="@topic.image" alt="..." style="width: 800px; height: 400px; object-fit: cover; object-position: 50% 50%;">
+                        <a href="@topic.link"><img class="d-block w-100" src="@topic.image" alt="..." style="width: 800px; height: 400px; object-fit: cover; object-position: 50% 50%;"></a>
                         <div class="card-body">
                             <p>@(topic.description.Length > 200 ? topic.description.Substring(0, 200) + "..." : topic.description)</p>
                         </div>

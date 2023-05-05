@@ -11,6 +11,7 @@ using Microsoft.Extensions.Caching.Memory;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using HtmlAgilityPack;
+using System.Web;
 
 namespace OpposingViewpoints.Pages
 {
@@ -209,13 +210,13 @@ namespace OpposingViewpoints.Pages
                 try
                 {
                     var href = topic.Attributes["href"].Value;
-                    var text = topic.InnerHtml;
+                    var text = HttpUtility.HtmlDecode(topic.InnerHtml);
                     var topicHtml = await httpClient.GetStringAsync(href);
                     var topicHtmlDoc = new HtmlDocument();
                     topicHtmlDoc.LoadHtml(topicHtml);
                     var topicDescriptionNode = topicHtmlDoc.DocumentNode.SelectSingleNode("//meta[@property='og:description']");
                     var topicImageNode = topicHtmlDoc.DocumentNode.SelectSingleNode("//meta[@property='og:image']");
-                    var topicDescription = topicDescriptionNode.Attributes["content"].Value;
+                    var topicDescription = HttpUtility.HtmlDecode(topicDescriptionNode.Attributes["content"].Value);
                     var topicImage = topicImageNode.Attributes["content"].Value;
 
                     responses.Add(new ControversialTopic
