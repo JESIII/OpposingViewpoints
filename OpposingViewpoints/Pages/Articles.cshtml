@@ -1,29 +1,21 @@
-﻿@page
+﻿@page "{topic}"
 @model OpposingViewpoints.Pages.ArticlesModel
 @{
-    ViewData["Title"] = "Articles";
+    ViewData["Title"] = "Articles - " + Model.Topic;
 }
 
 <div class="row" style="padding-top:10px;">
+    <h3 style="text-align: center;">@System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Model.Topic)</h3>
     <div class="col card border-success mb-3" style="display:inline">
-        <h2 style="color:white">For</h2>
+        <h2>For</h2>
         @foreach (var article in Model.Articles.Where(a => a.bias == Enums.BiasEnum.For))
         {
             <div class="card-body">
                 <p class="card-text">
-                    <b class="card-title">@article.title</b>
-                    <i class="card-text">@article.abstrTrunc</i>
+                    <h5 class="card-title">@article.title</h5>
+                    <i>@(article.abstrTrunc != null && article.abstrTrunc.Length > 0 ? article.abstrTrunc : "No abstract")<br /></i>
+                    Authors:@string.Join(',', @article.authors.Select(x => " " + x.name))
                     <br>
-                    Authors:
-                    <br>
-                    <ul>
-                        @foreach (var author in article.authors)
-                        {
-                            <li>
-                                @author.name
-                            </li>
-                        }
-                    </ul>
                     Journal: @article?.journal?.name
                     <br>
                     Year: @article.year
@@ -36,24 +28,15 @@
         }
     </div>
     <div class="col card border-info mb-3" style="display:inline">
-        <h2 style="color:white">Neutral</h2>
+        <h2>Neutral</h2>
         @foreach (var article in Model.Articles.Where(a => a.bias == Enums.BiasEnum.Neutral))
         {
             <div class="card-body">
                 <p class="card-text">
                     <h5 class="card-title">@article.title</h5>
-                    <i>@article.abstrTrunc</i>
+                    <i>@(article.abstrTrunc != null && article.abstrTrunc.Length > 0 ? article.abstrTrunc : "No abstract")<br /></i>
+                    Authors:@string.Join(',', @article.authors.Select(x => " " + x.name))
                     <br>
-                    Authors:
-                    <br>
-                    <ul>
-                        @foreach (var author in article.authors)
-                        {
-                            <li>
-                                @author.name
-                            </li>
-                        }
-                    </ul>
                     Journal: @(article?.journal?.name)
                     <br>
                     Year: @article.year
@@ -65,25 +48,16 @@
             </div>
         }
     </div>
-    <div class="col card border-danger mb-3" style="display:inline">
-        <h2 style="color:white">Against</h2>
+    <div class="col card border-danger mb-3">
+        <h2>Against</h2>
         @foreach (var article in Model.Articles.Where(a => a.bias == Enums.BiasEnum.Against))
         {
             <div class="card-body">
                 <p class="card-text">
                     <h5 class="card-title">@article.title</h5>
-                    <i>@article.abstrTrunc</i>
+                    <i>@(article.abstrTrunc != null && article.abstrTrunc.Length > 0 ? article.abstrTrunc : "No abstract")<br /></i>
+                    Authors:@string.Join(',', @article.authors.Select(x => " " + x.name))
                     <br>
-                    Authors:
-                    <br>
-                    <ul>
-                        @foreach (var author in article.authors)
-                        {
-                            <li>
-                                @author.name
-                            </li>
-                        }
-                    </ul>
                     Journal: @(article?.journal?.name)
                     <br>
                     Year: @article.year
