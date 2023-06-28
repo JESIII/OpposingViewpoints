@@ -5,22 +5,30 @@
 }
 
 <div class="row" style="padding-top:10px;">
-    <h3 style="text-align: center;">@System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Model.Topic)</h3>
+    <h4 style="text-align: center;">@System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Model.Topic)</h4>
     <div class="col card border-success mb-3" style="display:inline">
-        <h2>For</h2>
+        <h4 class="article-card-type">For</h4>
         @foreach (var article in Model.Articles.Where(a => a.bias == Enums.BiasEnum.For))
         {
-            <div class="card-body">
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
                     <h5 class="card-title">@article.title</h5>
-                    <i>@(article.abstrTrunc != null && article.abstrTrunc.Length > 0 ? article.abstrTrunc : "No abstract")<br /></i>
-                    Authors:@string.Join(',', @article.authors.Select(x => " " + x.name))
+                    <i class="article-summary">@(article.abstrTrunc != null && article.abstrTrunc.Length > 0 ? article.abstrTrunc : "No abstract")<br /></i>
+                    <span class="article-details">
+                        Authors:@string.Join(',', @article.authors.Select(x => " " + x.name))
+                    </span>
                     <br>
-                    Journal: @article?.journal?.name
+                        <span class="article-details">
+                            Journal: @article?.journal?.name
+                        </span>
                     <br>
-                    Year: @article.year
+                            <span class="article-details">
+                                Year: @article.year
+                            </span>
                     <br>
-                    Times Cited: @article.citationCount
+                                <span class="article-details">
+                                    Times Cited: @article.citationCount
+                                </span>
                     <br>
                     <a href="@article.url">Link</a>
                 </p>
@@ -28,20 +36,28 @@
         }
     </div>
     <div class="col card border-info mb-3" style="display:inline">
-        <h2>Neutral</h2>
+        <h4 class="article-card-type">Neutral</h4>
         @foreach (var article in Model.Articles.Where(a => a.bias == Enums.BiasEnum.Neutral))
         {
-            <div class="card-body">
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
                     <h5 class="card-title">@article.title</h5>
-                    <i>@(article.abstrTrunc != null && article.abstrTrunc.Length > 0 ? article.abstrTrunc : "No abstract")<br /></i>
-                    Authors:@string.Join(',', @article.authors.Select(x => " " + x.name))
+                    <i class="article-summary">@(article.abstrTrunc != null && article.abstrTrunc.Length > 0 ? article.abstrTrunc : "No abstract")<br /></i>
+                    <span class="article-details">
+                        Authors:@string.Join(',', @article.authors.Select(x => " " + x.name))
+                    </span>
                     <br>
-                    Journal: @(article?.journal?.name)
+                        <span class="article-details">
+                            Journal: @(article?.journal?.name)
+                        </span>
                     <br>
-                    Year: @article.year
+                            <span class="article-details">
+                                Year: @article.year
+                            </span>
                     <br>
-                    Times Cited: @article.citationCount
+                                <span class="article-details">
+                                    Times Cited: @article.citationCount
+                                </span>
                     <br>
                     <a href="@article.url">Link</a>
                 </p>
@@ -49,22 +65,24 @@
         }
     </div>
     <div class="col card border-danger mb-3">
-        <h2>Against</h2>
+        <h4 class="article-card-type">Against</h4>
         @foreach (var article in Model.Articles.Where(a => a.bias == Enums.BiasEnum.Against))
         {
-            <div class="card-body">
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
                     <h5 class="card-title">@article.title</h5>
-                    <i>@(article.abstrTrunc != null && article.abstrTrunc.Length > 0 ? article.abstrTrunc : "No abstract")<br /></i>
-                    Authors:@string.Join(',', @article.authors.Select(x => " " + x.name))
+                    <i class="article-summary">@(article.abstrTrunc != null && article.abstrTrunc.Length > 0 ? article.abstrTrunc : "No abstract")<br /></i>
+                    <span class="article-details">Authors:@string.Join(',', @article.authors.Select(x => " " + x.name))</span>
                     <br>
-                    Journal: @(article?.journal?.name)
+                    <span class="article-details">
+                        Journal: @(article?.journal?.name)</span>
                     <br>
-                    Year: @article.year
+                    <span class="article-details">Year: @article.year</span>
                     <br>
-                    Times Cited: @article.citationCount
+                    <span class="article-details">
+                        Times Cited: @article.citationCount</span>
                     <br>
-                    <a href="@article.url">Link</a>
+                    <a href="@article.url" class="article-details">Link</a>
                 </p>
             </div>
         }

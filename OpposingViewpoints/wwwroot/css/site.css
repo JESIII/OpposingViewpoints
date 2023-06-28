@@ -21,3 +21,26 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
     display: none !important;
     height: 0px;
 }
+.article-summary {
+    font-size: clamp(.8em, 2vw, 1.1em);
+}
+
+.for-neutral-against{
+    padding: unset !important;
+}
+
+.article-card-type{
+    text-align: center;
+}
+
+.popular-issue-title{
+    font-size: clamp(1em, 2vw, 2.1em);
+}
+
+.home-page-text {
+    font-size: clamp(1.5em, 2vw, 2.1em) !important;
+}
+
+.article-details {
+    font-size: clamp(.8em, 2vw, 1.1em);
+}

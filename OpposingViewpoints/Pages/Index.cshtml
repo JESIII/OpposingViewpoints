@@ -5,26 +5,29 @@
     ViewData["Title"] = "Search for opposing articles on controversial topics";
 }
 <div class="text-center">
-    <h1 class="display-4">Search for opposing articles</h1>
+    <h1 class="display-4 home-page-text">Search for opposing articles</h1>
     <div class="form">
         <form method="post" class="d-inline-flex justify-content-center" style="max-width:70%;">
             <input class="form-control" type="text" id="searchTerm" name="searchTerm" style="width:350px;" placeholder="Enter a topic you'd like opposing viewpoints on" />
-            <input id="searchBtn" class="btn btn-secondary" type="submit" value="Submit" asp-page-handler="SearchArticles" />
+            <input id="searchBtn" class="btn btn-secondary" type="submit" value="Search" asp-page-handler="SearchArticles" />
         </form>
     </div>
     @if (Model.SearchesInCache)
     {
-        <a>Recent Searches:</a>
-
-        <br>
-        @foreach (CacheModel cachedSearch in Model.CachedSearches.Values)
+        <h4>Recent Searches:</h4>
+        @foreach (CacheModel cachedSearch in Model.CachedSearches.Values.Cast<CacheModel>())
         {
-            <a asp-page-handler="CachedArticles" asp-route-value="@cachedSearch.SearchTerm">@cachedSearch.SearchTerm, </a>
+            <a asp-page-handler="CachedArticles" asp-route-value="@cachedSearch.SearchTerm">@cachedSearch.SearchTerm</a>
+            if (cachedSearch != Model.CachedSearches.Values.Cast<CacheModel>().Last())
+            {
+                <span>|</span>
+            }
         }
+        <br />
     }
 
     <br />
-    <h2>Popular Issues</h2>
+    <h3>Popular Issues</h3>
     <div id="carouselExampleSlidesOnly" class="carousel-dark slide" data-bs-ride="carousel" style="margin: auto;width: 80%; height: 50%;" display="inline">
         <div class="carousel-inner">
             @foreach (var topic in Model.ControversialTopics)
@@ -32,7 +35,7 @@
                 <div class="carousel-item @(topic == Model.ControversialTopics.First() ? "active" : "")" style="width: 100%; height: 100%; overflow: hidden;">
                     <div class="card mb-3">
                         <div class="card-body">
-                            <h5 class="card-title"><a class="text" style="text-decoration: none;color: inherit;" asp-page-handler="SearchArticles" asp-route-value="@topic.topic">@(topic.topic)</a></h5>
+                            <h5 class="card-title popular-issue-title"><a class="text" style="text-decoration: none;color: inherit;" asp-page-handler="SearchArticles" asp-route-value="@topic.topic">@(topic.topic)</a></h5>
                         </div>
                         <a asp-page-handler="SearchArticles" asp-route-value="@topic.topic"><img class="d-block w-100" src="@topic.image" alt="..." style="width: 800px; height: 400px; object-fit: cover; object-position: 50% 50%;"></a>
                         <div class="card-body">
@@ -45,481 +48,650 @@
         </div>
     </div>
 
-    <h2>Examples</h2>
-    <h3> <a asp-page-handler="SearchArticles" asp-route-value="Gun Control" style="text-decoration: none;color: inherit;">Gun Control</a></h3>
+    <h3>Examples</h3>
+    <h4> <a asp-page-handler="SearchArticles" asp-route-value="Gun Control" style="text-decoration: none;color: inherit;">Gun Control</a></h4>
     <div class="row" style="padding-top:10px;">
         <div class="col card border-success mb-3" style="display:inline">
-            <h2>For</h2>
-            <div class="card-body">
-                <p class="card-text">
-                </p><h5 class="card-title">The Christchurch mosque shooting, the media, and subsequent gun control reform in New Zealand: a descriptive analysis</h5>
-                <i>In March 2019, a mass shooting at two Christchurch mosques, livestreamed to Facebook, resulted in the deaths of 51 people. Psychologically, this served as a focusing event with high threat salience, shocking a country unused to gun violence despite its comparatively lax firearm legislation. The unpr...<br></i>
-                Authors: S. Every-Palmer, R. Cunningham, M. Jenkins, E. Bell
-                <br>
-                Journal: Psychiatry, Psychology and Law
-                <br>
-                Year: 2020
-                <br>
-                Times Cited: 8
-                <br>
-                <a href="https://www.semanticscholar.org/paper/79fee526ceb98cf1f1fca7d505be9975254bd676">Link</a>
-                <p></p>
-            </div>
-            <div class="card-body">
-                <p class="card-text">
-                </p><h5 class="card-title">Authoritarian Personality and Gender Differences in Gun Control Attitudes</h5>
-                <i>ABSTRACT This article investigates the gender gap in gun control attitudes, in which women are more likely to support gun control than men. Women are less likely than men to own a gun and to see owning guns as a means of self-protection. Using the 2012 American National Election Study Data, this art...<br></i>
-                Authors: M. Lizotte
-                <br>
-                Journal: Journal of Women, Politics &amp; Policy
-                <br>
-                Year: 2019
-                <br>
-                Times Cited: 7
-                <br>
-                <a href="https://www.semanticscholar.org/paper/7d1a2884139cbd5de2294c79387a089cb94d3d84">Link</a>
-                <p></p>
-            </div>
+            <h4 class="article-card-type">For</h4>
         </div>
         <div class="col card border-info mb-3" style="display:inline">
-            <h2>Neutral</h2>
-            <div class="card-body">
+            <h4 class="article-card-type">Neutral</h4>
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
                 </p><h5 class="card-title">State Gun-Control, Gun-Rights, and Preemptive Firearm-Related Laws Across 50 US States for 2009‒2018.</h5>
-                <i>Objectives. To assess state policy environments and the relationship between state gun-control, gun-rights, and preemptive ﬁrearm-related laws in the United States. Methods. In 2019 through 2020, we evaluated substantive ﬁrearm laws and preemptive ﬁrearm laws across 50 US states for 2009 through 201...<br></i>
-                Authors: Jennifer L. Pomeranz, D. Silver, Sarah A. Lieff
+                <i class="article-summary">Objectives. To assess state policy environments and the relationship between state gun-control, gun-rights, and preemptive ﬁrearm-related laws in the United States. Methods. In 2019 through 2020, we evaluated substantive ﬁrearm laws and preemptive ﬁrearm laws across 50 US states for 2009 through 201...<br></i>
+                <span class="article-details">
+                    Authors: Jennifer L. Pomeranz, D. Silver, Sarah A. Lieff
+                </span>
                 <br>
-                Journal: American journal of public health
+                <span class="article-details">
+                    Journal: American journal of public health
+                </span>
                 <br>
-                Year: 2021
+                <span class="article-details">
+                    Year: 2021
+                </span>
                 <br>
-                Times Cited: 5
+                <span class="article-details">
+                    Times Cited: 5
+                </span>
                 <br>
                 <a href="https://www.semanticscholar.org/paper/9ecdf6197b9dd601b68c8d332ceb8f864fe7ab58">Link</a>
                 <p></p>
             </div>
-            <div class="card-body">
+            <div class="card-body for-neutral-against">
+                <p class="card-text">
+                </p><h5 class="card-title">The Christchurch mosque shooting, the media, and subsequent gun control reform in New Zealand: a descriptive analysis</h5>
+                <i class="article-summary">In March 2019, a mass shooting at two Christchurch mosques, livestreamed to Facebook, resulted in the deaths of 51 people. Psychologically, this served as a focusing event with high threat salience, shocking a country unused to gun violence despite its comparatively lax firearm legislation. The unpr...<br></i>
+                <span class="article-details">
+                    Authors: S. Every-Palmer, R. Cunningham, M. Jenkins, E. Bell
+                </span>
+                <br>
+                <span class="article-details">
+                    Journal: Psychiatry, Psychology and Law
+                </span>
+                <br>
+                <span class="article-details">
+                    Year: 2020
+                </span>
+                <br>
+                <span class="article-details">
+                    Times Cited: 8
+                </span>
+                <br>
+                <a href="https://www.semanticscholar.org/paper/79fee526ceb98cf1f1fca7d505be9975254bd676">Link</a>
+                <p></p>
+            </div>
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
                 </p><h5 class="card-title">Gun Control in the Crosshairs: Christian Nationalism and Opposition to Stricter Gun Laws</h5>
-                <i>Despite increasingly frequent mass shootings and a growing dissatisfaction with current gun laws, American opposition to federal gun legislation remains strong. The authors show that opposition to stricter gun control is closely linked to Christian nationalism, a religious cultural framework that ma...<br></i>
-                Authors: Andrew L. Whitehead, Landon Schnabel, Samuel L. Perry
+                <i class="article-summary">Despite increasingly frequent mass shootings and a growing dissatisfaction with current gun laws, American opposition to federal gun legislation remains strong. The authors show that opposition to stricter gun control is closely linked to Christian nationalism, a religious cultural framework that ma...<br></i>
+                <span class="article-details">
+                    Authors: Andrew L. Whitehead, Landon Schnabel, Samuel L. Perry
+                </span>
                 <br>
-                Journal: Socius
+                <span class="article-details">
+                    Journal: Socius
+                </span>
                 <br>
-                Year: 2018
+                <span class="article-details">
+                    Year: 2018
+                </span>
                 <br>
-                Times Cited: 44
+                <span class="article-details">
+                    Times Cited: 44
+                </span>
                 <br>
                 <a href="https://www.semanticscholar.org/paper/83275c8a90c7981245482f78c1fa81233abb601d">Link</a>
                 <p></p>
             </div>
-            <div class="card-body">
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
-                </p><h5 class="card-title">God and Guns: Examining Religious Influences on Gun Control Attitudes in the United States</h5>
-                <i>Mass shootings in the United States have generated significant media coverage and public concern, invigorating debates over gun control. Media coverage and academic research on gun control attitudes and reactions to mass shootings have paid little attention to the role of religion. Recent research s...<br></i>
-                Authors: Stephen M. Merino
+                </p><h5 class="card-title">Authoritarian Personality and Gender Differences in Gun Control Attitudes</h5>
+                <i class="article-summary">ABSTRACT This article investigates the gender gap in gun control attitudes, in which women are more likely to support gun control than men. Women are less likely than men to own a gun and to see owning guns as a means of self-protection. Using the 2012 American National Election Study Data, this art...<br></i>
+                <span class="article-details">
+                    Authors: M. Lizotte
+                </span>
                 <br>
-                Journal: Religions
+                <span class="article-details">
+                    Journal: Journal of Women, Politics &amp; Policy
+                </span>
                 <br>
-                Year: 2018
+                <span class="article-details">
+                    Year: 2019
+                </span>
                 <br>
-                Times Cited: 14
+                <span class="article-details">
+                    Times Cited: 7
+                </span>
                 <br>
-                <a href="https://www.semanticscholar.org/paper/48732d37ce14ff62c72e0ddac677cfd1df9b72b9">Link</a>
+                <a href="https://www.semanticscholar.org/paper/7d1a2884139cbd5de2294c79387a089cb94d3d84">Link</a>
+                <p></p>
+            </div>
+            <div class="card-body for-neutral-against">
+                <p class="card-text">
+                </p><h5 class="card-title">Critical Events and Attitude Change: Support for Gun Control After Mass Shootings</h5>
+                <i class="article-summary">When and to what extent do crises and significant events induce changes in political attitudes? Theories of public opinion and policymaking predict that major events restructure public opinion and pry open new political opportunities. We examine the effect of major events on support for public polic...<br></i>
+                <span class="article-details">
+                    Authors: Jon C. Rogowski, P. Tucker
+                </span>
+                <br>
+                <span class="article-details">
+                    Journal: Political Science Research and Methods
+                </span>
+                <br>
+                <span class="article-details">
+                    Year: 2018
+                </span>
+                <br>
+                <span class="article-details">
+                    Times Cited: 13
+                </span>
+                <br>
+                <a href="https://www.semanticscholar.org/paper/42c4e56ab7c2cc8c3b42e1db0901e1450ec228bf">Link</a>
                 <p></p>
             </div>
         </div>
         <div class="col card border-danger mb-3">
-            <h2>Against</h2>
-            <div class="card-body">
+            <h4 class="article-card-type">Against</h4>
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
                 </p><h5 class="card-title">GUN control in retrograde signaling: How GENOMES UNCOUPLED proteins adjust nuclear gene expression to plastid biogenesis.</h5>
-                <i>Communication between cellular compartments is vital for development and environmental adaptation. Signals emanating from organelles, so-called retrograde signals, coordinate nuclear gene expression with the developmental stage and/or the functional status of the organelle. Plastids (best known in t...<br></i>
-                Authors: Guo-Zhang Wu, R. Bock
+                <i class="article-summary">Communication between cellular compartments is vital for development and environmental adaptation. Signals emanating from organelles, so-called retrograde signals, coordinate nuclear gene expression with the developmental stage and/or the functional status of the organelle. Plastids (best known in t...<br></i>
+                <span class="article-details">Authors: Guo-Zhang Wu, R. Bock</span>
                 <br>
-                Journal: The Plant cell
+                <span class="article-details">
+                    Journal: The Plant cell
+                </span>
                 <br>
-                Year: 2021
+                <span class="article-details">Year: 2021</span>
                 <br>
-                Times Cited: 25
+                <span class="article-details">
+                    Times Cited: 25
+                </span>
                 <br>
-                <a href="https://www.semanticscholar.org/paper/5b4582eea849e409b052e23af5d52613dc9e0190">Link</a>
+                <a href="https://www.semanticscholar.org/paper/5b4582eea849e409b052e23af5d52613dc9e0190" class="article-details">Link</a>
                 <p></p>
             </div>
-            <div class="card-body">
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
                 </p><h5 class="card-title">Gun Owners and Gun Control: Shared Status, Divergent Opinions</h5>
-                <i>No abstract<br></i>
-                Authors: A. L. Burton, M. Logan, Justin T. Pickett, F. T. Cullen, Cheryl Lero Johnson, Velmer S. Burton
+                <i class="article-summary">No abstract<br></i>
+                <span class="article-details">Authors: A. L. Burton, M. Logan, Justin T. Pickett, F. T. Cullen, Cheryl Lero Johnson, Velmer S. Burton</span>
                 <br>
-                Journal: Sociological Inquiry
+                <span class="article-details">
+                    Journal: Sociological Inquiry
+                </span>
                 <br>
-                Year: 2021
+                <span class="article-details">Year: 2021</span>
                 <br>
-                Times Cited: 8
+                <span class="article-details">
+                    Times Cited: 8
+                </span>
                 <br>
-                <a href="https://www.semanticscholar.org/paper/6611f320a814eb9167fac89dd32a6a59d6336db0">Link</a>
+                <a href="https://www.semanticscholar.org/paper/6611f320a814eb9167fac89dd32a6a59d6336db0" class="article-details">Link</a>
                 <p></p>
             </div>
-            <div class="card-body">
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
                 </p><h5 class="card-title">Assessing the Impact of Knowledge and Location on College Students’ Perceptions of Gun Control and Campus Carry Policies: a Multisite Comparison</h5>
-                <i>No abstract<br></i>
-                Authors: Nathan E. Kruis, Richard Wentling, Mark H. Heirigs, Glen A Ishoy
+                <i class="article-summary">No abstract<br></i>
+                <span class="article-details">Authors: Nathan E. Kruis, Richard Wentling, Mark H. Heirigs, Glen A Ishoy</span>
                 <br>
-                Journal: American Journal of Criminal Justice
+                <span class="article-details">
+                    Journal: American Journal of Criminal Justice
+                </span>
                 <br>
-                Year: 2020
+                <span class="article-details">Year: 2020</span>
                 <br>
-                Times Cited: 13
+                <span class="article-details">
+                    Times Cited: 13
+                </span>
                 <br>
-                <a href="https://www.semanticscholar.org/paper/5cd10a8c62ae0a11d8f6943de5ca1e85d387f55d">Link</a>
+                <a href="https://www.semanticscholar.org/paper/5cd10a8c62ae0a11d8f6943de5ca1e85d387f55d" class="article-details">Link</a>
                 <p></p>
             </div>
-            <div class="card-body">
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
                 </p><h5 class="card-title">Neural Network-Based Error-Tracking Iterative Learning Control for Tank Gun Control Systems With Arbitrary Initial States</h5>
-                <i>In this paper, a novel neural network-based error-track iterative learning control scheme is proposed to tackle trajectory tracking problem for tank gun control systems. Firstly, the system modeling for tank gun control systems is introduced as a preparation of controller design. Then, the reference...<br></i>
-                Authors: Qiyao Yang, Q. Yan, Jianping Cai, Jinghua Tian, X. Guan
+                <i class="article-summary">In this paper, a novel neural network-based error-track iterative learning control scheme is proposed to tackle trajectory tracking problem for tank gun control systems. Firstly, the system modeling for tank gun control systems is introduced as a preparation of controller design. Then, the reference...<br></i>
+                <span class="article-details">Authors: Qiyao Yang, Q. Yan, Jianping Cai, Jinghua Tian, X. Guan</span>
                 <br>
-                Journal: IEEE Access
+                <span class="article-details">
+                    Journal: IEEE Access
+                </span>
                 <br>
-                Year: 2020
+                <span class="article-details">Year: 2020</span>
                 <br>
-                Times Cited: 15
+                <span class="article-details">
+                    Times Cited: 15
+                </span>
                 <br>
-                <a href="https://www.semanticscholar.org/paper/42148aee5f44f805fb77a85fa36f12ad2d637aad">Link</a>
+                <a href="https://www.semanticscholar.org/paper/42148aee5f44f805fb77a85fa36f12ad2d637aad" class="article-details">Link</a>
                 <p></p>
             </div>
-            <div class="card-body">
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
                 </p><h5 class="card-title">Explaining Gun Deaths: Gun Control, Mental Illness, and Policymaking in the American States</h5>
-                <i>No abstract<br></i>
-                Authors: Jacob Smith, Jonathan Spiegler
+                <i class="article-summary">No abstract<br></i>
+                <span class="article-details">Authors: Jacob Smith, Jonathan Spiegler</span>
                 <br>
-                Journal: Policy Studies Journal
+                <span class="article-details">
+                    Journal: Policy Studies Journal
+                </span>
                 <br>
-                Year: 2020
+                <span class="article-details">Year: 2020</span>
                 <br>
-                Times Cited: 18
+                <span class="article-details">
+                    Times Cited: 18
+                </span>
                 <br>
-                <a href="https://www.semanticscholar.org/paper/031edf09d96ff41d99dc488df415163020099346">Link</a>
+                <a href="https://www.semanticscholar.org/paper/031edf09d96ff41d99dc488df415163020099346" class="article-details">Link</a>
                 <p></p>
             </div>
-            <div class="card-body">
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
                 </p><h5 class="card-title">Active Disturbance Rejection Adaptive Control of Tank Turret-gun Control Systems</h5>
-                <i>Aiming at parametric uncertainties and unmodeled disturbances of tank turret-gun control systems, this paper presents an adaptive control scheme via full state feedback. The basic idea of this control scheme is to combine adaptive control with extended state observer through back stepping method. Th...<br></i>
-                Authors: Shusen Yuan, Jianyong Yao, W. Deng, Guolai Yang, Xiang-Hua Ma
+                <i class="article-summary">Aiming at parametric uncertainties and unmodeled disturbances of tank turret-gun control systems, this paper presents an adaptive control scheme via full state feedback. The basic idea of this control scheme is to combine adaptive control with extended state observer through back stepping method. Th...<br></i>
+                <span class="article-details">Authors: Shusen Yuan, Jianyong Yao, W. Deng, Guolai Yang, Xiang-Hua Ma</span>
                 <br>
-                Journal: 2020 39th Chinese Control Conference (CCC)
+                <span class="article-details">
+                    Journal: 2020 39th Chinese Control Conference (CCC)
+                </span>
                 <br>
-                Year: 2020
+                <span class="article-details">Year: 2020</span>
                 <br>
-                Times Cited: 3
+                <span class="article-details">
+                    Times Cited: 3
+                </span>
                 <br>
-                <a href="https://www.semanticscholar.org/paper/3ab8759f73a4d8282364b74405fab39a0f66109a">Link</a>
+                <a href="https://www.semanticscholar.org/paper/3ab8759f73a4d8282364b74405fab39a0f66109a" class="article-details">Link</a>
                 <p></p>
             </div>
-            <div class="card-body">
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
                 </p><h5 class="card-title">Event-Triggered Adaptive Control for Tank Gun Control Systems</h5>
-                <i>In this paper, an event-triggered adaptive control scheme is proposed for the gun control system of a tank subject to not only external disturbances but also uncertain modeling errors and unknown parameters. Compared with the existing results, the upper bound function of modeling errors is unknown. ...<br></i>
-                Authors: Jianping Cai, Rui Yu, Q. Yan, Congli Mei, Binrui Wang, Lujuan Shen
+                <i class="article-summary">In this paper, an event-triggered adaptive control scheme is proposed for the gun control system of a tank subject to not only external disturbances but also uncertain modeling errors and unknown parameters. Compared with the existing results, the upper bound function of modeling errors is unknown. ...<br></i>
+                <span class="article-details">Authors: Jianping Cai, Rui Yu, Q. Yan, Congli Mei, Binrui Wang, Lujuan Shen</span>
                 <br>
-                Journal: IEEE Access
+                <span class="article-details">
+                    Journal: IEEE Access
+                </span>
                 <br>
-                Year: 2019
+                <span class="article-details">Year: 2019</span>
                 <br>
-                Times Cited: 14
+                <span class="article-details">
+                    Times Cited: 14
+                </span>
                 <br>
-                <a href="https://www.semanticscholar.org/paper/89a3479c4fe9655c6053f1809e3992b964c5750c">Link</a>
+                <a href="https://www.semanticscholar.org/paper/89a3479c4fe9655c6053f1809e3992b964c5750c" class="article-details">Link</a>
                 <p></p>
             </div>
-            <div class="card-body">
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
                 </p><h5 class="card-title">Robust Learning Control for Tank Gun Control Servo Systems Under Alignment Condition</h5>
-                <i>This paper proposes an adaptive learning control scheme to solve high-precision velocity tracking problem for tank gun control servo systems. Lyapunov approach is used to design the learning controller, with alignment condition used to cope with initial problem of iterative learning control. Robust ...<br></i>
-                Authors: Guangming Zhu, Xiushan Wu, Q. Yan, Jianping Cai
+                <i class="article-summary">This paper proposes an adaptive learning control scheme to solve high-precision velocity tracking problem for tank gun control servo systems. Lyapunov approach is used to design the learning controller, with alignment condition used to cope with initial problem of iterative learning control. Robust ...<br></i>
+                <span class="article-details">Authors: Guangming Zhu, Xiushan Wu, Q. Yan, Jianping Cai</span>
                 <br>
-                Journal: IEEE Access
+                <span class="article-details">
+                    Journal: IEEE Access
+                </span>
                 <br>
-                Year: 2019
+                <span class="article-details">Year: 2019</span>
                 <br>
-                Times Cited: 12
+                <span class="article-details">
+                    Times Cited: 12
+                </span>
                 <br>
-                <a href="https://www.semanticscholar.org/paper/96295e4e5c050a4a652d0dd2a64b9b2c787309a2">Link</a>
+                <a href="https://www.semanticscholar.org/paper/96295e4e5c050a4a652d0dd2a64b9b2c787309a2" class="article-details">Link</a>
                 <p></p>
             </div>
-            <div class="card-body">
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
                 </p><h5 class="card-title">Gun Control</h5>
-                <i>No abstract<br></i>
-                Authors: W. Jeynes
+                <i class="article-summary">No abstract<br></i>
+                <span class="article-details">Authors: W. Jeynes</span>
                 <br>
-                Journal: Reducing School Shootings
+                <span class="article-details">
+                    Journal: Reducing School Shootings
+                </span>
                 <br>
-                Year: 2020
+                <span class="article-details">Year: 2020</span>
                 <br>
-                Times Cited: 0
+                <span class="article-details">
+                    Times Cited: 0
+                </span>
                 <br>
-                <a href="https://www.semanticscholar.org/paper/13839d732bcb8249cc792583e7d690cc661ac045">Link</a>
+                <a href="https://www.semanticscholar.org/paper/13839d732bcb8249cc792583e7d690cc661ac045" class="article-details">Link</a>
                 <p></p>
             </div>
-            <div class="card-body">
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
-                </p><h5 class="card-title">The effects of state and Federal gun control laws on school shootings</h5>
-                <i>ABSTRACT School shootings are the highest profile type of murder in the United States. They are also the rarest type of murder. In 2014, there were only 17 firearm murders that were perpetrated in schools and colleges. The purpose of the present study is to determine the relationship between school ...<br></i>
-                Authors: M. Gius
+                </p><h5 class="card-title">What Americans Think About Gun Control: Evidence from the General Social Survey, 1972-2016</h5>
+                <i class="article-summary">Objective Gun control is a classic case of policy gridlock and we commonly assume public opinion is at the foundation of this gridlock. However, public opinion analyses of attitudes about gun control often say little about the topic itself and do not fully leverage our long‐running survey data to as...<br></i>
+                <span class="article-details">Authors: Steven V. Miller</span>
                 <br>
-                Journal: Applied Economics Letters
+                <span class="article-details">
+                    Journal: Social Science Quarterly
+                </span>
                 <br>
-                Year: 2018
+                <span class="article-details">Year: 2018</span>
                 <br>
-                Times Cited: 13
+                <span class="article-details">
+                    Times Cited: 18
+                </span>
                 <br>
-                <a href="https://www.semanticscholar.org/paper/1d8e56f8a4e15e2693e1367921326455bf4d48fc">Link</a>
+                <a href="https://www.semanticscholar.org/paper/1eafc548e9a221f8daf9c8efc907a8265855c1b4" class="article-details">Link</a>
                 <p></p>
             </div>
         </div>
     </div>
 
-    <h3> <a asp-page-handler="SearchArticles" asp-route-value="Cancel Culture" style="text-decoration: none;color: inherit;">Cancel Culture</a></h3>
+    <h4> <a asp-page-handler="SearchArticles" asp-route-value="Cancel Culture" style="text-decoration: none;color: inherit;">Cancel Culture</a></h4>
     <div class="row" style="padding-top:10px;">
         <div class="col card border-success mb-3" style="display:inline">
-            <h2>For</h2>
+            <h4 class="article-card-type">For</h4>
         </div>
         <div class="col card border-info mb-3" style="display:inline">
-            <h2>Neutral</h2>
-            <div class="card-body">
+            <h4 class="article-card-type">Neutral</h4>
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
                 </p><h5 class="card-title">Cancel Culture: Myth or Reality?</h5>
-                <i>In recent years, a progressive “cancel culture” in society, right-wing politicians and commentators claim, has silenced alternative perspectives, ostracized contrarians, and eviscerated robust intellectual debate, with college campuses at the vanguard of this development. These arguments can be dism...<br></i>
-                Authors: P. Norris
+                <i class="article-summary">In recent years, a progressive “cancel culture” in society, right-wing politicians and commentators claim, has silenced alternative perspectives, ostracized contrarians, and eviscerated robust intellectual debate, with college campuses at the vanguard of this development. These arguments can be dism...<br></i>
+                <span class="article-details">
+                    Authors: P. Norris
+                </span>
                 <br>
-                Journal: Political Studies
+                <span class="article-details">
+                    Journal: Political Studies
+                </span>
                 <br>
-                Year: 2021
+                <span class="article-details">
+                    Year: 2021
+                </span>
                 <br>
-                Times Cited: 33
+                <span class="article-details">
+                    Times Cited: 33
+                </span>
                 <br>
                 <a href="https://www.semanticscholar.org/paper/68c6013538700c14aad1e2b9499e88516d21d7cc">Link</a>
                 <p></p>
             </div>
-            <div class="card-body">
-                <p class="card-text">
-                </p><h5 class="card-title">CANCEL CULTURE: THE SCARLET LETTER IN GABRIELA PUGLIESI'S CASE</h5>
-                <i>The following paper presents definitions of the cancel culture phenomenon on the internet, bringing concepts based on shame, public humiliation, and reputation according to Solove (2007) and Ng (2020). Focused on digital influencers, draws parallels between public humiliation practices adopted in th...<br></i>
-                Authors: Nathalia de Oliveira Nunes
-                <br>
-                Journal: Brazilian Creative Industries Journal
-                <br>
-                Year: 2022
-                <br>
-                Times Cited: 0
-                <br>
-                <a href="https://www.semanticscholar.org/paper/aefa185134589406764298370d0ba34681e03478">Link</a>
-                <p></p>
-            </div>
-            <div class="card-body">
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
                 </p><h5 class="card-title">We Are Cancelled: Exploring Victims’ Experiences of Cancel Culture on Social Media in the Philippines</h5>
-                <i>The continuous advancement of modern technology enables its users to engage in various interactions in the online public sphere, including conversations about multiple ideas and perspectives. It has now played a significant role in our modern society, paving the door for several participatory cultur...<br></i>
-                Authors: Joseph Leonard A. Jusay, Jeremiah Armelin S. Lababit, Lemuel Oliver M. Moralina, J. Ancheta
+                <i class="article-summary">The continuous advancement of modern technology enables its users to engage in various interactions in the online public sphere, including conversations about multiple ideas and perspectives. It has now played a significant role in our modern society, paving the door for several participatory cultur...<br></i>
+                <span class="article-details">
+                    Authors: Joseph Leonard A. Jusay, Jeremiah Armelin S. Lababit, Lemuel Oliver M. Moralina, J. Ancheta
+                </span>
                 <br>
-                Journal: Rupkatha Journal on Interdisciplinary Studies in Humanities
+                <span class="article-details">
+                    Journal: Rupkatha Journal on Interdisciplinary Studies in Humanities
+                </span>
                 <br>
-                Year: 2022
+                <span class="article-details">
+                    Year: 2022
+                </span>
                 <br>
-                Times Cited: 0
+                <span class="article-details">
+                    Times Cited: 0
+                </span>
                 <br>
                 <a href="https://www.semanticscholar.org/paper/363761d0176e63b83938417a9761501f425783e9">Link</a>
                 <p></p>
             </div>
-            <div class="card-body">
+            <div class="card-body for-neutral-against">
+                <p class="card-text">
+                </p><h5 class="card-title">Cancel Culture: An Unproductive Form of Blame</h5>
+                <i class="article-summary">In this paper I argue that Miranda Fricker’s account of blame in “What’s the Point of Blame? A Paradigm Based Explanation” can assist in explaining why cancel culture is ultimately unproductive. In particular, the phenomenon of cancel culture possesses pathological forms of blame. There are three sp...<br></i>
+                <span class="article-details">
+                    Authors: Boochie Post
+                </span>
+                <br>
+                <span class="article-details">
+                    Journal: Ex Animo
+                </span>
+                <br>
+                <span class="article-details">
+                    Year: 2022
+                </span>
+                <br>
+                <span class="article-details">
+                    Times Cited: 0
+                </span>
+                <br>
+                <a href="https://www.semanticscholar.org/paper/96ad8d7031075d1d57d4ef38626f5c69a265341d">Link</a>
+                <p></p>
+            </div>
+            <div class="card-body for-neutral-against">
+                <p class="card-text">
+                </p><h5 class="card-title">Principled or Partisan? The Effect of Cancel Culture Framings on Support for Free Speech</h5>
+                <i class="article-summary">Political scientists have long been interested in the effects that media framings have on support or tolerance for controversial speech. In recent years, the concept of cancel culture has complicated our understanding of free speech. In particular, the modern Republican Party under Donald Trump has ...<br></i>
+                <span class="article-details">
+                    Authors: James J. Fahey, Damon C. Roberts, S. Utych
+                </span>
+                <br>
+                <span class="article-details">
+                    Journal: American Politics Research
+                </span>
+                <br>
+                <span class="article-details">
+                    Year: 2022
+                </span>
+                <br>
+                <span class="article-details">
+                    Times Cited: 0
+                </span>
+                <br>
+                <a href="https://www.semanticscholar.org/paper/c42d4b636f81f8fc5e22a9adc4ed30ae23d48f24">Link</a>
+                <p></p>
+            </div>
+            <div class="card-body for-neutral-against">
+                <p class="card-text">
+                </p><h5 class="card-title">CANCEL CULTURE AND ACADEMIC FREEDOM: A Perspective from Democratic-Deliberative Education Philosophy</h5>
+                <i class="article-summary">Cancel culture (or also known as call-out culture) is a social and cultural phenomenon that has been gaining global attention in the recent years. Public figures, company brands or institutions can be ostracized or boycotted only on the basis of disagreeing with the statement or visions of the sympa...<br></i>
+                <span class="article-details">
+                    Authors: T. Kurniawan, Rambang Ngawan, Yudas Alno, Agus Herianto
+                </span>
+                <br>
+                <span class="article-details">
+                    Journal: Waskita: Jurnal Pendidikan Nilai dan Pembangunan Karakter
+                </span>
+                <br>
+                <span class="article-details">
+                    Year: 2022
+                </span>
+                <br>
+                <span class="article-details">
+                    Times Cited: 0
+                </span>
+                <br>
+                <a href="https://www.semanticscholar.org/paper/521e376584b5a8b0ad8fd11b518a1bfc08a90557">Link</a>
+                <p></p>
+            </div>
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
                 </p><h5 class="card-title">Cancel Culture in World Politics: Historical and Philosophical Roots</h5>
-                <i>In the West, "cancel culture” is spreading at epidemic speed as a vehicle of the "new ethics.” Although the concept of "cancel culture” remains opportunistic, there is a perceived need to identify the subject of research of this phenomenon from the standpoint of political science and meth-ods of his...<br></i>
-                Authors: Sergey CHUGROV
+                <i class="article-summary">In the West, "cancel culture” is spreading at epidemic speed as a vehicle of the "new ethics.” Although the concept of "cancel culture” remains opportunistic, there is a perceived need to identify the subject of research of this phenomenon from the standpoint of political science and meth-ods of his...<br></i>
+                <span class="article-details">
+                    Authors: Sergey CHUGROV
+                </span>
                 <br>
-                Journal: Social Sciences
+                <span class="article-details">
+                    Journal: Social Sciences
+                </span>
                 <br>
-                Year: 2022
+                <span class="article-details">
+                    Year: 2022
+                </span>
                 <br>
-                Times Cited: 0
+                <span class="article-details">
+                    Times Cited: 0
+                </span>
                 <br>
                 <a href="https://www.semanticscholar.org/paper/1de5e2a5ac70db338485df7d8538e3262d33d2c9">Link</a>
                 <p></p>
             </div>
-            <div class="card-body">
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
-                </p><h5 class="card-title">Cancel Culture : Case Study of Sexual Harassment on Followers Autobase Twitter Areajulid</h5>
-                <i>&nbsp;Virtual open spaces such as Twitter offer a place for netizens to gather and discuss certain topics. Netizens will issue their own opinions and often end up boycotting/punishing someone who is considered to have made a mistake, which is called cancel culture, experts have different opinions about c...<br></i>
-                Authors: Yayang Eka Januarda Nisa, Yuhastina ., N. Nurhadi
+                </p><h5 class="card-title">Kim Seon Ho, You Are Cancelled: The Collective Understanding of Cancel Culture</h5>
+                <i class="article-summary">On October 2021, Kim Seon Ho was on peak of his career when faced a wave of backlash after an anonymous post circulated in online communities saying that an unnamed actor “manipulated her into getting an abortion under false pretenses” and being cancelled. Researchers will use a case study of a Kim ...<br></i>
+                <span class="article-details">
+                    Authors: C. Bangun, Nareswari Kumaralalita
+                </span>
                 <br>
-                Journal: Journal Civics and Social Studies
+                <span class="article-details">
+                    Journal: Jurnal Komunikatif
+                </span>
                 <br>
-                Year: 2022
+                <span class="article-details">
+                    Year: 2022
+                </span>
                 <br>
-                Times Cited: 0
+                <span class="article-details">
+                    Times Cited: 0
+                </span>
                 <br>
-                <a href="https://www.semanticscholar.org/paper/eb186931436d322c8da20045c92d75c63b8442b3">Link</a>
+                <a href="https://www.semanticscholar.org/paper/aad94495c784aa7adc2e6ca7516937a6c6488563">Link</a>
                 <p></p>
             </div>
-            <div class="card-body">
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
-                </p><h5 class="card-title">Cancel Culture: Leverage Tool in Political Struggle</h5>
-                <i>In recent years, the phenomenon of cancel culture has been gaining traction on social media as well as in real life. Considering the formation of this phenomenon, the authors of the article analyse its emergence and the way it spreads in society. The authors of the article emphasise the fact that ca...<br></i>
-                Authors: Pavlo Molochko, Daria Hryniova
+                </p><h5 class="card-title">Remembering contested legacies of the past or when the culture of remembrance gives way to the cancel culture</h5>
+                <i class="article-summary">Everyday life is filled with numerous images of what has passed. All of them, although on different bases, leave a mark in time and thus become legacies of the past. Although we usually understand and accept this inherited corpus without a problem, sometimes we face certain inconveniences. For examp...<br></i>
+                <span class="article-details">
+                    Authors: Milica Božić-Marojević
+                </span>
                 <br>
-                Journal: Mediaforum : Analytics, Forecasts, Information Management
+                <span class="article-details">
+                    Journal: Zbornik radova Filozofskog fakulteta u Pristini
+                </span>
                 <br>
-                Year: 2022
+                <span class="article-details">
+                    Year: 2022
+                </span>
                 <br>
-                Times Cited: 0
+                <span class="article-details">
+                    Times Cited: 0
+                </span>
                 <br>
-                <a href="https://www.semanticscholar.org/paper/d0e5fc49bcdaa01e0c919b0c397c2c7e2d2e6d3e">Link</a>
+                <a href="https://www.semanticscholar.org/paper/f980ddbc2c2b4338433bf276be0854da50e133a0">Link</a>
                 <p></p>
             </div>
         </div>
         <div class="col card border-danger mb-3">
-            <h2>Against</h2>
-            <div class="card-body">
-                <p class="card-text">
-                </p><h5 class="card-title">The Discourse around Cancel Culture as an Object of Linguocultural and Translation Analysis: Logic vs “Logic”</h5>
-                <i>The article deals with discursive manifestation forms of the cultural and ideological content of cancel culture and woke movements. It is suggested that these phenomena are connected by cause (woke) and effect (cancel) relation. Both are analyzed in terms of the discursive semantics, which is mainly...<br></i>
-                Authors: A. F. Fefelov
-                <br>
-                Journal: NSU Vestnik. Series: Linguistics and Intercultural Communication
-                <br>
-                Year: 2022
-                <br>
-                Times Cited: 5
-                <br>
-                <a href="https://www.semanticscholar.org/paper/d4ecdd716b6702a6f9be25faaeaaced1ae78790e">Link</a>
-                <p></p>
-            </div>
-            <div class="card-body">
-                <p class="card-text">
-                </p><h5 class="card-title">Platform drama: “Cancel culture,” celebrity, and the struggle for accountability on YouTube</h5>
-                <i>Recent years have witnessed debates about so-called “cancel culture” and more broadly about online accountability practices. Here we revisit this topic through a study of YouTube “drama,” a hybrid genre where creators provide commentary on the scandals, scams, and feuds between YouTube celebrities. ...<br></i>
-                Authors: Rebecca Lewis, Angèle Christin
-                <br>
-                Journal: New Media &amp; Society
-                <br>
-                Year: 2022
-                <br>
-                Times Cited: 5
-                <br>
-                <a href="https://www.semanticscholar.org/paper/d5c80c21d2afa41ac16240027d6fc17e38d3eb40">Link</a>
-                <p></p>
-            </div>
-            <div class="card-body">
+            <h4 class="article-card-type">Against</h4>
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
                 </p><h5 class="card-title">The moderating role of complaint handling on brand hate in the cancel culture</h5>
-                <i>PurposeThis study investigates the moderating role of complaint handling between ideological incompatibility, symbolic incongruity, negative past experience and corporate social irresponsibility on brand hate.Design/methodology/approachThe study employs the Duplex Hate theory which assumes that hate...<br></i>
-                Authors: A. Z. Abbasi, Muhammad Shahzeb Fayyaz, D. Ting, Maira Munir, Shahid Bashir, Chun Zhang
+                <i class="article-summary">PurposeThis study investigates the moderating role of complaint handling between ideological incompatibility, symbolic incongruity, negative past experience and corporate social irresponsibility on brand hate.Design/methodology/approachThe study employs the Duplex Hate theory which assumes that hate...<br></i>
+                <span class="article-details">Authors: A. Z. Abbasi, Muhammad Shahzeb Fayyaz, D. Ting, Maira Munir, Shahid Bashir, Chun Zhang</span>
                 <br>
-                Journal: Asia-Pacific Journal of Business Administration
+                <span class="article-details">
+                    Journal: Asia-Pacific Journal of Business Administration
+                </span>
                 <br>
-                Year: 2022
+                <span class="article-details">Year: 2022</span>
                 <br>
-                Times Cited: 5
+                <span class="article-details">
+                    Times Cited: 5
+                </span>
                 <br>
-                <a href="https://www.semanticscholar.org/paper/29715ca3290b94ec2697cdb15b1744e92d0359f2">Link</a>
+                <a href="https://www.semanticscholar.org/paper/29715ca3290b94ec2697cdb15b1744e92d0359f2" class="article-details">Link</a>
                 <p></p>
             </div>
-            <div class="card-body">
+            <div class="card-body for-neutral-against">
+                <p class="card-text">
+                </p><h5 class="card-title">Platform drama: “Cancel culture,” celebrity, and the struggle for accountability on YouTube</h5>
+                <i class="article-summary">Recent years have witnessed debates about so-called “cancel culture” and more broadly about online accountability practices. Here we revisit this topic through a study of YouTube “drama,” a hybrid genre where creators provide commentary on the scandals, scams, and feuds between YouTube celebrities. ...<br></i>
+                <span class="article-details">Authors: Rebecca Lewis, Angèle Christin</span>
+                <br>
+                <span class="article-details">
+                    Journal: New Media &amp; Society
+                </span>
+                <br>
+                <span class="article-details">Year: 2022</span>
+                <br>
+                <span class="article-details">
+                    Times Cited: 5
+                </span>
+                <br>
+                <a href="https://www.semanticscholar.org/paper/d5c80c21d2afa41ac16240027d6fc17e38d3eb40" class="article-details">Link</a>
+                <p></p>
+            </div>
+            <div class="card-body for-neutral-against">
+                <p class="card-text">
+                </p><h5 class="card-title">The Discourse around Cancel Culture as an Object of Linguocultural and Translation Analysis: Logic vs “Logic”</h5>
+                <i class="article-summary">The article deals with discursive manifestation forms of the cultural and ideological content of cancel culture and woke movements. It is suggested that these phenomena are connected by cause (woke) and effect (cancel) relation. Both are analyzed in terms of the discursive semantics, which is mainly...<br></i>
+                <span class="article-details">Authors: A. F. Fefelov</span>
+                <br>
+                <span class="article-details">
+                    Journal: NSU Vestnik. Series: Linguistics and Intercultural Communication
+                </span>
+                <br>
+                <span class="article-details">Year: 2022</span>
+                <br>
+                <span class="article-details">
+                    Times Cited: 5
+                </span>
+                <br>
+                <a href="https://www.semanticscholar.org/paper/d4ecdd716b6702a6f9be25faaeaaced1ae78790e" class="article-details">Link</a>
+                <p></p>
+            </div>
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
                 </p><h5 class="card-title">Cancel Culture in the Academia: The hispanic perspective</h5>
-                <i>Although many cases of the so-called Cancel Culture in the American and British colleges and are taking place nowadays, social science researchers claim for a better understanding of the phenomenon and a clarification of the concept. In this context, cultural perspectives can be an interesting tool ...<br></i>
-                Authors: Teresa Sádaba, M. Herrero
+                <i class="article-summary">Although many cases of the so-called Cancel Culture in the American and British colleges and are taking place nowadays, social science researchers claim for a better understanding of the phenomenon and a clarification of the concept. In this context, cultural perspectives can be an interesting tool ...<br></i>
+                <span class="article-details">Authors: Teresa Sádaba, M. Herrero</span>
                 <br>
-                Journal: methaodos revista de ciencias sociales
+                <span class="article-details">
+                    Journal: methaodos revista de ciencias sociales
+                </span>
                 <br>
-                Year: 2022
+                <span class="article-details">Year: 2022</span>
                 <br>
-                Times Cited: 2
+                <span class="article-details">
+                    Times Cited: 2
+                </span>
                 <br>
-                <a href="https://www.semanticscholar.org/paper/9125e6f448440c74f39c4956bb0aceeac737ba34">Link</a>
+                <a href="https://www.semanticscholar.org/paper/9125e6f448440c74f39c4956bb0aceeac737ba34" class="article-details">Link</a>
                 <p></p>
             </div>
-            <div class="card-body">
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
                 </p><h5 class="card-title">The Cancer of Cancel Culture: Spreading “Correct” Scientific Ideologies Across North American Academia</h5>
-                <i>No abstract<br></i>
-                Authors: J. Pfaus
+                <i class="article-summary">No abstract<br></i>
+                <span class="article-details">Authors: J. Pfaus</span>
                 <br>
-                Journal: Archives of Sexual Behavior
+                <span class="article-details">
+                    Journal: Archives of Sexual Behavior
+                </span>
                 <br>
-                Year: 2022
+                <span class="article-details">Year: 2022</span>
                 <br>
-                Times Cited: 2
+                <span class="article-details">
+                    Times Cited: 2
+                </span>
                 <br>
-                <a href="https://www.semanticscholar.org/paper/0f5432abcffab73c3b316185bf71c8b2154a102b">Link</a>
+                <a href="https://www.semanticscholar.org/paper/0f5432abcffab73c3b316185bf71c8b2154a102b" class="article-details">Link</a>
                 <p></p>
             </div>
-            <div class="card-body">
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
-                </p><h5 class="card-title">CANCEL CULTURE: DILEMA RUANG PUBLIK DAN KUASA NETIZEN</h5>
-                <i>Penelitian ini dilakukan dengan tujuan memahami tindakan cancel culture oleh netizen pada akun-akun media sosial artis atau influencer. Cancel culture merupakan fenomena seseorang dapat diprotes atau diboikot karena kesalahan masa lalu yang pernah diperbuat. Cancel culture menjadi bentuk sanksi tega...<br></i>
-                Authors: N. Purnamasari
+                </p><h5 class="card-title">Cancel culture, libertatea și omul complet</h5>
+                <i class="article-summary">"Cancel culture refers to a social phenomenon that has been little explored in Romania. There has not been much debate and often this concern to better understand the history and to question certain things has been seen as an attack on the foundations of society and its values, as an attack stemming...<br></i>
+                <span class="article-details">Authors: R. Pop</span>
                 <br>
-                Journal: Mediakom : Jurnal Ilmu Komunikasi
+                <span class="article-details">
+                    Journal: Symbolon
+                </span>
                 <br>
-                Year: 2022
+                <span class="article-details">Year: 2022</span>
                 <br>
-                Times Cited: 0
+                <span class="article-details">
+                    Times Cited: 0
+                </span>
                 <br>
-                <a href="https://www.semanticscholar.org/paper/5f894c48e053713c7797ba2a1c7a527a923c5faf">Link</a>
+                <a href="https://www.semanticscholar.org/paper/d4d6037db52645d80326a43c58f81b99971bd3d1" class="article-details">Link</a>
                 <p></p>
             </div>
-            <div class="card-body">
-                <p class="card-text">
-                </p><h5 class="card-title">Aspek Hukum Liabilitas Public Figure Dan Upaya Perlindungan Terhadap Nama Dikaitkan Dengan Cancel Culture</h5>
-                <i>
-                    Abstrak
-                    Di Indonesia saat ini cyberbullying masih dianggap sangat rendah karena masyarakat menganggap ujaran kebencian tersebut hanyalah kritik dan nasihat untuk orang yang dikritik. Hingga akhirnya tindakan cancel culture ini banyak dilakukan oleh warganet dan dari adanya hal tersebut sangat mempe...<br>
-                </i>
-                Authors: Clara Alycia
-                <br>
-                Journal: Jatiswara
-                <br>
-                Year: 2022
-                <br>
-                Times Cited: 0
-                <br>
-                <a href="https://www.semanticscholar.org/paper/0412609ddddd8bf76d4f5d7a97c346f467389c46">Link</a>
-                <p></p>
-            </div>
-            <div class="card-body">
+            <div class="card-body for-neutral-against">
                 <p class="card-text">
                 </p><h5 class="card-title">A Cancel Culture Corpus through the Lens of Natural Language Processing</h5>
-                <i>Cancel Culture as an Internet phenomenon has been previously explored from a social and legal science perspective. This paper demonstrates how Natural Language Processing tasks can be derived from this previous work, underlying techniques on how cancel culture can be measured, identified and evaluat...<br></i>
-                Authors: Justus-Jonas Erker, Catalina Goanta, Gerasimos Spanakis
+                <i class="article-summary">Cancel Culture as an Internet phenomenon has been previously explored from a social and legal science perspective. This paper demonstrates how Natural Language Processing tasks can be derived from this previous work, underlying techniques on how cancel culture can be measured, identified and evaluat...<br></i>
+                <span class="article-details">Authors: Justus-Jonas Erker, Catalina Goanta, Gerasimos Spanakis</span>
                 <br>
-                Journal:
+                <span class="article-details">
+                    Journal:
+                </span>
                 <br>
-                Year: 2022
+                <span class="article-details">Year: 2022</span>
                 <br>
-                Times Cited: 0
+                <span class="article-details">
+                    Times Cited: 0
+                </span>
                 <br>
-                <a href="https://www.semanticscholar.org/paper/ee7a4a90c28bc1e27eb7567750782b648a64edb3">Link</a>
-                <p></p>
-            </div>
-            <div class="card-body">
-                <p class="card-text">
-                </p><h5 class="card-title">Kim Seon Ho, You Are Cancelled: The Collective Understanding of Cancel Culture</h5>
-                <i>On October 2021, Kim Seon Ho was on peak of his career when faced a wave of backlash after an anonymous post circulated in online communities saying that an unnamed actor “manipulated her into getting an abortion under false pretenses” and being cancelled. Researchers will use a case study of a Kim ...<br></i>
-                Authors: C. Bangun, Nareswari Kumaralalita
-                <br>
-                Journal: Jurnal Komunikatif
-                <br>
-                Year: 2022
-                <br>
-                Times Cited: 0
-                <br>
-                <a href="https://www.semanticscholar.org/paper/aad94495c784aa7adc2e6ca7516937a6c6488563">Link</a>
+                <a href="https://www.semanticscholar.org/paper/ee7a4a90c28bc1e27eb7567750782b648a64edb3" class="article-details">Link</a>
                 <p></p>
             </div>
         </div>
