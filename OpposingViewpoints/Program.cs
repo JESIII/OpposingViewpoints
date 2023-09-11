@@ -23,7 +23,9 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection(); //using nginx on digital ocean vm
+app.UseForwardedHeaders(); //using nginx on digital ocean vm
+
 app.UseStaticFiles();
 
 app.UseSession();
