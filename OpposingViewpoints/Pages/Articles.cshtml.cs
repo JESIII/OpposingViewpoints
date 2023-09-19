@@ -1,61 +1,78 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OpposingViewpoints.Models;
-using System.Text.Json.Serialization;
 using System.Text.Json;
 using OpposingViewpoints.Enums;
 using RestSharp;
-using System.Collections.Specialized;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace OpposingViewpoints.Pages
 {
     public class ArticlesModel : PageModel
     {
         private readonly IHttpContextAccessor _contextAccessor;
-        private readonly IMemoryCache _memoryCache;
         private readonly IConfiguration _configuration;
-        public List<SSApiPaper> Articles { get; set; }
+        private readonly ICache _cache;
+        public List<Article> Articles { get; set; }
         public string Topic { get; set; }
-        public ArticlesModel(IHttpContextAccessor contextAccessor, IMemoryCache memoryCache, IConfiguration configuration)
+        public ArticlesModel(IHttpContextAccessor contextAccessor, IConfiguration configuration, ICache cache)
         {
             _contextAccessor = contextAccessor;
-            _memoryCache = memoryCache;
             _configuration = configuration;
+            _cache = cache;
         }
         public async Task OnGetAsync(string topic)
         {
             Topic = topic;
-            List<SSApiPaper> articlesFromCache = await GetArticlesFromCache(topic);
+            List<Article> articlesFromCache = await _cache.GetArticlesFromCache(topic);
             if (articlesFromCache.Count > 0)
             {
                 Articles = articlesFromCache;
                 return;
             }
             var articles = await GetArticlesAndBiasesAsync(topic);
-            CacheSearchResults(articles.data, topic);
+            _cache.CacheSearchResults(articles.results.ToList(), topic);
             if (articles != null)
             {
-                Articles = articles.data;
+                Articles = articles.results.ToList();
             }
         }
-        public async Task<SSApiResponse> GetScholarlyArticlesAsync(string topic)
+        public async Task<Articles> GetScholarlyArticlesAsync(string topic, int pageNo = 0)
         {
-            var options = new RestClientOptions("http://api.semanticscholar.org")
+            var options = new RestClientOptions("https://api.core.ac.uk")
             {
                 MaxTimeout = -1,
             };
             var client = new RestClient(options);
-            var request = new RestRequest($"/graph/v1/paper/search?query={topic.Replace(' ', '+')}&limit=15&fields=title,authors,abstract,url,journal,year,citationCount", Method.Get);
+            var request = new RestRequest("/v3/search/outputs", Method.Post);
+            request.AddHeader("Content-Type", "application/json");
+            request.AddHeader("Authorization", "Bearer M1gk0Qlroajv5bJiFOH9xnLI2YzTPc6h");
+            request.AddHeader("Cookie", "AWSALB=g/upfKkkuuCvzAOhFnnN1s23b3iuNlZ7oyy7fbPV42rdR5b1LRLu608AbjtAtGESfP/gAQwMaEymL38SngK4lEV4qCy3rYjty3V0jsDpbOt7AdKjs3hncgARIgE9; AWSALBCORS=g/upfKkkuuCvzAOhFnnN1s23b3iuNlZ7oyy7fbPV42rdR5b1LRLu608AbjtAtGESfP/gAQwMaEymL38SngK4lEV4qCy3rYjty3V0jsDpbOt7AdKjs3hncgARIgE9; AWSALBTG=KiWMtnEHXuokQZZ3BqWsCX7gTeJBfRPtVu1rSmqTJ6ffECzF0X3+YX38HHYFc2ZgbkD75bW7bccTjwgPHQ8RVRvE5paWCAKgfCoFfpYbyl3G37FhGT5PZk5CDKo7MXwDbddKrS2yUIQgJYkPTBYlHoVySFzddLYGh3h9mSRFxQmYj9n5HZ4=; AWSALBTGCORS=KiWMtnEHXuokQZZ3BqWsCX7gTeJBfRPtVu1rSmqTJ6ffECzF0X3+YX38HHYFc2ZgbkD75bW7bccTjwgPHQ8RVRvE5paWCAKgfCoFfpYbyl3G37FhGT5PZk5CDKo7MXwDbddKrS2yUIQgJYkPTBYlHoVySFzddLYGh3h9mSRFxQmYj9n5HZ4=");
+            var param = new
+            {
+                q = topic,
+                offset = pageNo,
+                limit = 10,
+                entity_type = "outputs",
+                exclude = new string[]
+                {
+                    "acceptedDate",
+                    "arxivId",
+                    "outputs",
+                    "depositedDate",
+                    "fullText",
+                    "magId",
+                    "references"
+                }
+            };
+            var body = JsonSerializer.Serialize(param);
+            request.AddStringBody(body, DataFormat.Json);
             RestResponse response = await client.ExecuteAsync(request);
-            var responseObject = JsonSerializer.Deserialize<SSApiResponse>(response.Content);
-            return responseObject;
+            return JsonSerializer.Deserialize<Articles>(response.Content);
         }
 
-        public async Task<SSApiResponse> GetArticlesAndBiasesAsync(string topic)
+        public async Task<Articles> GetArticlesAndBiasesAsync(string topic)
         {
             var articles = await GetScholarlyArticlesAsync(topic);
-            foreach (var article in articles.data)
+            foreach (var article in articles.results)
             {
                 var text = article.@abstract;
                 var bias = await AnalyzeTextChatGPTAsync(topic, text);
@@ -85,52 +102,8 @@ namespace OpposingViewpoints.Pages
 
             var responseJson = await response.Content.ReadAsStringAsync(); //testResponse; //
             var responseObject = JsonSerializer.Deserialize<OpenaiResponse>(responseJson);
-            BiasEnum bias;
-            Enum.TryParse<BiasEnum>(responseObject?.choices?.FirstOrDefault()?.message?.content, out bias);
+            Enum.TryParse(responseObject?.choices?.FirstOrDefault()?.message?.content, out BiasEnum bias);
             return bias;
-        }
-        public async Task CacheSearchResults(List<SSApiPaper> articles, string searchTerm)
-        {
-            OrderedDictionary cachedSearches;
-            if (_memoryCache.TryGetValue("CachedSearches", out cachedSearches))
-            {
-                if (cachedSearches.Count > 0)
-                {
-                    if (cachedSearches.Contains(searchTerm.ToLower()))
-                    {
-                        return;
-                    }
-                    if (cachedSearches.Count > 10)
-                    {
-                        cachedSearches.RemoveAt(cachedSearches.Count - 1);
-                    }
-                }
-            }
-            if (cachedSearches == null)
-            {
-                cachedSearches = new OrderedDictionary();
-            }
-            cachedSearches.Insert(0, searchTerm.ToLower(), new CacheModel
-            {
-                Date = DateTime.Now,
-                SearchTerm = searchTerm,
-                Articles = articles
-            });
-            _memoryCache.Set("CachedSearches", cachedSearches, TimeSpan.FromDays(1));
-        }
-
-        public async Task<List<SSApiPaper>> GetArticlesFromCache(string searchTerm)
-        {
-            OrderedDictionary cachedSearches;
-            if (_memoryCache.TryGetValue("CachedSearches", out cachedSearches))
-            {
-                if (cachedSearches.Contains(searchTerm.ToLower()))
-                {
-                    var cachedSearch = cachedSearches[searchTerm.ToLower()] as CacheModel;
-                    return cachedSearch.Articles;
-                }
-            }
-            return new List<SSApiPaper>();
         }
     }
 }

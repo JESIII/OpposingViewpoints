@@ -13,24 +13,31 @@
             <div class="card-body for-neutral-against">
                 <p class="card-text">
                     <h5 class="card-title">@article.title</h5>
-                    <i class="article-summary">@(article.abstrTrunc != null && article.abstrTrunc.Length > 0 ? article.abstrTrunc : "No abstract")<br /></i>
+                    <i class="article-summary">@article.abstrTrunc</i><br />
                     <span class="article-details">
-                        Authors:@string.Join(',', @article.authors.Select(x => " " + x.name))
+                        Authors: @(article.authors != null ? string.Join(", ", @article.authors.Select(x => x.name)) : "")
                     </span>
-                    <br>
-                        <span class="article-details">
-                            Journal: @article?.journal?.name
-                        </span>
-                    <br>
-                            <span class="article-details">
-                                Year: @article.year
-                            </span>
-                    <br>
-                                <span class="article-details">
-                                    Times Cited: @article.citationCount
-                                </span>
-                    <br>
-                    <a href="@article.url">Link</a>
+                    <br />
+                    <span class="article-details">
+                        Journal: @(article.journals != null ? string.Join(", ", @article.journals.Select(x => x.title)) : "")
+                    </span>
+                    <br />
+                    <span class="article-details">
+                        Published: @article.publishedDate
+                    </span>
+                    <br />
+                    @*                    <span class="article-details">
+                Times Cited: @article.citationCount
+                </span>*@
+                    <br />
+                    <span class="article-details">Links:</span>
+                    @foreach (var link in @article.sourceFulltextUrls)
+                    {
+                        <a href="@link">@link</a>
+
+                        <br />
+                    }
+
                 </p>
             </div>
         }
@@ -42,24 +49,31 @@
             <div class="card-body for-neutral-against">
                 <p class="card-text">
                     <h5 class="card-title">@article.title</h5>
-                    <i class="article-summary">@(article.abstrTrunc != null && article.abstrTrunc.Length > 0 ? article.abstrTrunc : "No abstract")<br /></i>
+                    <i class="article-summary">@article.abstrTrunc</i><br />
                     <span class="article-details">
-                        Authors:@string.Join(',', @article.authors.Select(x => " " + x.name))
+                        Authors: @(article.authors != null ? string.Join(", ", @article.authors.Select(x => x.name)) : "")
                     </span>
-                    <br>
-                        <span class="article-details">
-                            Journal: @(article?.journal?.name)
-                        </span>
-                    <br>
-                            <span class="article-details">
-                                Year: @article.year
-                            </span>
-                    <br>
-                                <span class="article-details">
-                                    Times Cited: @article.citationCount
-                                </span>
-                    <br>
-                    <a href="@article.url">Link</a>
+                    <br />
+                    <span class="article-details">
+                        Journal: @(article.journals != null ? string.Join(", ", @article.journals.Select(x => x.title)) : "")
+                    </span>
+                    <br />
+                    <span class="article-details">
+                        Published: @article.publishedDate
+                    </span>
+                    <br />
+                    @*                    <span class="article-details">
+                Times Cited: @article.citationCount
+                </span>*@
+                    <br />
+                    <span class="article-details">Links:</span>
+                    @foreach (var link in @article.sourceFulltextUrls)
+                    {
+                        <a href="@link">@link</a>
+
+                        <br />
+                    }
+
                 </p>
             </div>
         }
@@ -71,18 +85,31 @@
             <div class="card-body for-neutral-against">
                 <p class="card-text">
                     <h5 class="card-title">@article.title</h5>
-                    <i class="article-summary">@(article.abstrTrunc != null && article.abstrTrunc.Length > 0 ? article.abstrTrunc : "No abstract")<br /></i>
-                    <span class="article-details">Authors:@string.Join(',', @article.authors.Select(x => " " + x.name))</span>
-                    <br>
+                    <i class="article-summary">@article.abstrTrunc</i><br />
                     <span class="article-details">
-                        Journal: @(article?.journal?.name)</span>
-                    <br>
-                    <span class="article-details">Year: @article.year</span>
-                    <br>
+                        Authors: @(article.authors != null ? string.Join(", ", @article.authors.Select(x => x.name)) : "")
+                    </span>
+                    <br />
                     <span class="article-details">
-                        Times Cited: @article.citationCount</span>
-                    <br>
-                    <a href="@article.url" class="article-details">Link</a>
+                        Journal: @(article.journals != null ? string.Join(", ", @article.journals.Select(x => x.title)) : "")
+                    </span>
+                    <br />
+                    <span class="article-details">
+                        Published: @article.publishedDate
+                    </span>
+                    <br />
+                    @*                    <span class="article-details">
+                Times Cited: @article.citationCount
+                </span>*@
+                    <br />
+                    <span class="article-details">Links:</span>
+                    @foreach (var link in @article.sourceFulltextUrls)
+                    {
+                        <a href="@link">@link</a>
+
+                        <br />
+                    }
+
                 </p>
             </div>
         }

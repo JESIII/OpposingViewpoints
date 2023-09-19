@@ -6,7 +6,7 @@ namespace OpposingViewpoints.Models
     {
         public DateTime Date { get;set; }
         public string SearchTerm { get; set; }
-        public List<SSApiPaper> Articles { get; set; }
+        public List<Article> Articles { get; set; }
     }
 
 }

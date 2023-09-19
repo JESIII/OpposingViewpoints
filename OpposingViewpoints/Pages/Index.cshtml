@@ -15,14 +15,14 @@
     @if (Model.SearchesInCache)
     {
         <h4>Recent Searches:</h4>
-        @foreach (CacheModel cachedSearch in Model.CachedSearches.Values.Cast<CacheModel>())
+@*        @foreach (CacheModel cachedSearch in Model.CachedSearches.Values.Cast<CacheModel>())
         {
             <a asp-page-handler="CachedArticles" asp-route-value="@cachedSearch.SearchTerm">@cachedSearch.SearchTerm</a>
             if (cachedSearch != Model.CachedSearches.Values.Cast<CacheModel>().Last())
             {
                 <span>|</span>
             }
-        }
+        }*@
         <br />
     }
 

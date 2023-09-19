@@ -22,29 +22,26 @@ namespace OpposingViewpoints.Pages
 
         public bool SearchesInCache { get; set; }
 
-        [ViewData]
-        public OrderedDictionary CachedSearches { get; set; } = new OrderedDictionary();
-
         public bool TopicsInCache { get; set; }
         public List<ControversialTopic> ControversialTopics { get; set; }
 
         private readonly ILogger<IndexModel> _logger;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IConfiguration _configuration;
-        private readonly IMemoryCache _memoryCache;
+        private readonly ICache _cache;
 
-        public IndexModel(ILogger<IndexModel> logger, IHttpContextAccessor contextAccessor, IConfiguration configuration, IMemoryCache memoryCache)
+        public IndexModel(ILogger<IndexModel> logger, IHttpContextAccessor contextAccessor, IConfiguration configuration, ICache cache)
         {
             _logger = logger;
             _contextAccessor = contextAccessor;
             _configuration = configuration;
-            _memoryCache = memoryCache;
+            _cache = cache;
         }
 
         public async Task OnGetAsync()
         {
-            var topics = new List<ControversialTopic>();
-            if (_memoryCache.TryGetValue("TodaysTopics", out topics))
+            var topics = await _cache.GetTodaysTopicsFromCache();
+            if (topics.Any())
             {
                 TopicsInCache = true;
                 ControversialTopics = topics;
@@ -55,34 +52,6 @@ namespace OpposingViewpoints.Pages
                 TopicsInCache = true;
                 ControversialTopics = topics;
             }
-            var cachedSearches = new OrderedDictionary();
-            if (_memoryCache.TryGetValue("CachedSearches", out cachedSearches))
-            {
-                if (cachedSearches.Count > 0) 
-                {
-                    CachedSearches = cachedSearches;
-                    SearchesInCache = true;
-                }
-            }
-        }
-
-        public void CacheTodaysTopics(List<ControversialTopic> proconResponses)
-        {
-            _memoryCache.Set("TodaysTopics", proconResponses, TimeSpan.FromDays(1));
-        }
-
-        public async Task<List<SSApiPaper>> GetArticlesFromCache(string searchTerm)
-        {
-            OrderedDictionary cachedSearches;
-            if (_memoryCache.TryGetValue("CachedSearches", out cachedSearches))
-            {
-                if (cachedSearches.Contains(searchTerm.ToLower()))
-                {
-                    var cachedSearch = cachedSearches[searchTerm.ToLower()] as CacheModel;
-                    return cachedSearch.Articles;
-                }
-            }
-            return new List<SSApiPaper>();
         }
 
         public async Task<IActionResult> OnPostSearchArticlesAsync()
@@ -100,7 +69,7 @@ namespace OpposingViewpoints.Pages
         public async Task<IActionResult> OnGetCachedArticlesAsync()
         {
             var searchTerm = Request.Query.FirstOrDefault().Value.ToString();
-            List<SSApiPaper> articlesFromCache = await GetArticlesFromCache(searchTerm);
+            List<Article> articlesFromCache = await _cache.GetArticlesFromCache(searchTerm);
             if (articlesFromCache.Count > 0)
             {
                 _contextAccessor.HttpContext.Session.SetString($"Articles/{searchTerm}", JsonSerializer.Serialize(articlesFromCache));
@@ -147,7 +116,7 @@ namespace OpposingViewpoints.Pages
                 }
                 catch { }
             }
-            CacheTodaysTopics(responses);
+            _cache.CacheTodaysTopics(responses);
             return responses;
         }
     }
