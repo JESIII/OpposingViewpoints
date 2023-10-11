@@ -14,29 +14,33 @@
                 <p class="card-text">
                     <h5 class="card-title">@article.title</h5>
                     <i class="article-summary">@article.abstrTruncShort</i><br />
-                    <span class="article-details">
-                        Authors: @(article.authors != null ? string.Join(", ", @article.authors.Select(x => x.name)) : "")
-                    </span>
-                    <br />
-                    <span class="article-details">
-                        Journal: @(article.journals != null ? string.Join(", ", @article.journals.Select(x => x.title)) : "")
-                    </span>
-                    <br />
-                    <span class="article-details">
-                        Published: @article.pubDate
-                    </span>
-                    <br />
-                    @*                    <span class="article-details">
-                Times Cited: @article.citationCount
-                </span>*@
-                    <br />
-                    <span class="article-details">Links:</span>
-                    @foreach (var link in @article.sourceFulltextUrls)
-                    {
-                        <a href="@link">@link</a>
-
+                    <details>
+                        <summary>more</summary>
+                        <i class="article-summary">@article.abstrTruncLong</i><br />
                         <br />
-                    }
+                        <span class="article-details">
+                            Authors: @(article.authors != null ? string.Join(", ", @article.authors.Select(x => x.name)) : "N/A")
+                        </span>
+                        <br />
+                        <span class="article-details">
+                            Journal: @(article.journals != null ? string.Join(", ", @article.journals.Select(x => x.title)) : "N/A")
+                        </span>
+                        <br />
+                        <span class="article-details">
+                            Published: @(article.pubDate != null ? article.pubDate.Value.ToString("MMMM yyyy") : "N/A")
+                        </span>
+                        <br>
+                        <span class="article-details">Links:</span>
+                        <br>
+                        @foreach (var link in @article.sourceFulltextUrls)
+            {
+                        <a href="@link">@link</a>
+                        <br />
+            }
+                    </details>
+
+                    <br />
+
 
                 </p>
             </div>
