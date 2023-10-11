@@ -127,7 +127,7 @@
         }
     </div>
     <form asp-page-handler="Get" method="get">
-        <input type="hidden" name="pageNo" value="@(Model.PageNo + 1)" />
+        <input type="hidden" name="offset" value="@(Model.Offset + 5)" />
         <button>More</button>
     </form>
     

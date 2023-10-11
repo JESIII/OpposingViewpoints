@@ -13,7 +13,7 @@ namespace OpposingViewpoints.Pages
         private readonly IConfiguration _configuration;
         private readonly ICache _cache;
         public List<Article> Articles { get; set; }
-        public int PageNo { get; set; }
+        public int Offset { get; set; }
         public string Topic { get; set; }
         public ArticlesModel(IHttpContextAccessor contextAccessor, IConfiguration configuration, ICache cache)
         {
@@ -21,12 +21,12 @@ namespace OpposingViewpoints.Pages
             _configuration = configuration;
             _cache = cache;
         }
-        public async Task OnGetAsync(string topic, int pageNo = 0)
+        public async Task OnGetAsync(string topic, int offset = 0)
         {
             Topic = topic;
-            PageNo = pageNo;
+            Offset = offset;
             var allArticles = new List<Article>();
-            for (int i = 0; i <= PageNo; i++)
+            for (int i = 0; i <= Offset; i+=5)
             {
                 var articlesFromCache = await _cache.GetArticlesFromCache(Topic, i);
                 if (articlesFromCache.Count > 0)
@@ -55,7 +55,7 @@ namespace OpposingViewpoints.Pages
             var param = new
             {
                 q = topic,
-                offset = PageNo,
+                offset = Offset,
                 limit = 5,
                 entity_type = "outputs",
                 exclude = new string[]
