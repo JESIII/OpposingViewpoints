@@ -40,6 +40,7 @@ namespace OpposingViewpoints.Pages
 
         public async Task OnGetAsync()
         {
+
             var topics = await _cache.GetTodaysTopicsFromCache();
             if (topics.Any())
             {

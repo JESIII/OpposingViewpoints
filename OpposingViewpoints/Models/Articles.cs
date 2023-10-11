@@ -1,4 +1,5 @@
 ﻿using OpposingViewpoints.Enums;
+using System.Runtime.CompilerServices;
 
 namespace OpposingViewpoints.Models
 {
@@ -25,7 +26,15 @@ namespace OpposingViewpoints.Models
         public string downloadUrl { get; set; }
         public int id { get; set; }
         public string title { get; set; }
-        public object publishedDate { get; set; }
+        public string publishedDate { get; set; }
+        public DateTime? pubDate {
+            get
+            {
+                if (DateTime.TryParse(this.publishedDate, out var date))
+                    return date;
+                return null;
+            }
+        }
         public string publisher { get; set; }
         public string[] sourceFulltextUrls { get; set; }
         public string updatedDate { get; set; }
@@ -36,13 +45,22 @@ namespace OpposingViewpoints.Models
         {
             get { return this.@abstract; }
         }
-        public string abstrTrunc
+        public string abstrTruncLong
         {
             get
             {
-                return this.@abstract?.Length > 300 ? this.@abstract.Substring(0, 300) + "..." : this.@abstract;
+                return this.@abstract?.Length > 500 ? "..." + this.@abstract.Substring(150, 350) + "..." : this.@abstract;
             }
         }
+
+        public string abstrTruncShort
+        {
+            get
+            {
+                return this.@abstract?.Length > 150 ? this.@abstract.Substring(0, 150) + "..." : this.@abstract;
+            }
+        }
+
         public string[] tags { get; set; }
         public string fulltextStatus { get; set; }
         public string[] subjects { get; set; }

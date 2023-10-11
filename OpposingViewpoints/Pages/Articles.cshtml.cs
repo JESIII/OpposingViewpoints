@@ -3,6 +3,7 @@ using OpposingViewpoints.Models;
 using System.Text.Json;
 using OpposingViewpoints.Enums;
 using RestSharp;
+using System.Collections.Generic;
 
 namespace OpposingViewpoints.Pages
 {
@@ -12,6 +13,7 @@ namespace OpposingViewpoints.Pages
         private readonly IConfiguration _configuration;
         private readonly ICache _cache;
         public List<Article> Articles { get; set; }
+        public int PageNo { get; set; }
         public string Topic { get; set; }
         public ArticlesModel(IHttpContextAccessor contextAccessor, IConfiguration configuration, ICache cache)
         {
@@ -19,23 +21,27 @@ namespace OpposingViewpoints.Pages
             _configuration = configuration;
             _cache = cache;
         }
-        public async Task OnGetAsync(string topic)
+        public async Task OnGetAsync(string topic, int pageNo = 0)
         {
             Topic = topic;
-            List<Article> articlesFromCache = await _cache.GetArticlesFromCache(topic);
-            if (articlesFromCache.Count > 0)
+            PageNo = pageNo;
+            var allArticles = new List<Article>();
+            for (int i = 0; i <= PageNo; i++)
             {
-                Articles = articlesFromCache;
-                return;
+                var articlesFromCache = await _cache.GetArticlesFromCache(Topic, i);
+                if (articlesFromCache.Count > 0)
+                {
+                    allArticles.AddRange(articlesFromCache);
+                    continue;
+                }
+                var articles = await GetArticlesAndBiasesAsync(Topic);
+                _cache.CacheSearchResults(articles.results.ToList(), Topic, i);
+                allArticles.AddRange(articles.results);
             }
-            var articles = await GetArticlesAndBiasesAsync(topic);
-            _cache.CacheSearchResults(articles.results.ToList(), topic);
-            if (articles != null)
-            {
-                Articles = articles.results.ToList();
-            }
+            Articles = allArticles;
         }
-        public async Task<Articles> GetScholarlyArticlesAsync(string topic, int pageNo = 0)
+
+        public async Task<Articles> GetScholarlyArticlesAsync(string topic)
         {
             var options = new RestClientOptions("https://api.core.ac.uk")
             {
@@ -49,8 +55,8 @@ namespace OpposingViewpoints.Pages
             var param = new
             {
                 q = topic,
-                offset = pageNo,
-                limit = 10,
+                offset = PageNo,
+                limit = 5,
                 entity_type = "outputs",
                 exclude = new string[]
                 {
@@ -68,6 +74,7 @@ namespace OpposingViewpoints.Pages
             RestResponse response = await client.ExecuteAsync(request);
             return JsonSerializer.Deserialize<Articles>(response.Content);
         }
+
 
         public async Task<Articles> GetArticlesAndBiasesAsync(string topic)
         {
