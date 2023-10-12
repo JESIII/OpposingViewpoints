@@ -5,11 +5,11 @@
     ViewData["Title"] = "Search for opposing articles on controversial topics";
 }
 <div class="text-center">
-    <h1 class="display-4 home-page-text">Enter a topic you'd like to search for opposing viewpoints on:</h1>
+    <h4 class="display-4 home-page-text">Enter a topic you'd like to search for opposing viewpoints on:</h4>
     <div class="form">
         <form method="post" class="d-inline-flex justify-content-center" style="max-width:70%;">
             <input class="form-control" type="text" id="searchTerm" name="searchTerm" style="width:350px;" placeholder="Enter a topic you'd like opposing viewpoints on" />
-            <input id="searchBtn" class="btn btn-secondary" type="submit" value="Search" asp-page-handler="SearchArticles" />
+            <button id="searchBtn" class="btn btn-secondary" type="submit" value="Search" asp-page-handler="SearchArticles" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Loading" onclick="showSpinner()">Search</button>
         </form>
     </div>
 </div>
@@ -36,4 +36,9 @@
         }
     }
     asyncWhileLoop();
+
+    function showSpinner() {
+        document.getElementById("searchBtn").ariaDisabled = "true";
+        document.getElementById("searchBtn").innerHTML = '<span class="spinner-border spinner-border-sm" aria-hidden="true">'
+    }
 </script>

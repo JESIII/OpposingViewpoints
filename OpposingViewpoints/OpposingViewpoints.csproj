@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="GroupDocs.Classification" Version="21.1.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
     <PackageReference Include="RestSharp" Version="109.0.1" />
   </ItemGroup>

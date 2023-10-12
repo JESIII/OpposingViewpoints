@@ -38,7 +38,7 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
 }
 
 .home-page-text {
-    font-size: clamp(1.5em, 2vw, 2.1em) !important;
+    font-size: clamp(1em, 1.5vw, 1.8em) !important;
 }
 
 .article-details {

@@ -4,6 +4,7 @@
     {
         For = 0,
         Neutral = 1,
-        Against = 2
+        Against = 2,
+        Irrelevant = 3
     }
 }
