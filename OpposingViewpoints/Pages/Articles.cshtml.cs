@@ -2,9 +2,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using OpposingViewpoints.Models;
 using System.Text.Json;
 using OpposingViewpoints.Enums;
-using RestSharp;
-using GroupDocs.Classification;
-using GroupDocs.Classification.DTO;
 
 namespace OpposingViewpoints.Pages
 {
